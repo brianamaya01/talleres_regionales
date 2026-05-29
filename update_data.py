@@ -158,9 +158,12 @@ def personas_to_js(personas):
 # ];" en su propia línea (no greedy).
 
 def replace_const(content, name, js_value):
-    pattern     = r'(const ' + re.escape(name) + r' = )\[[\s\S]*?\n\];'
-    replacement = f'const {name} = {js_value};'
-    new_content, n = re.subn(pattern, replacement, content, count=1)
+    pattern = r'(const ' + re.escape(name) + r' = )\[[\s\S]*?\n\];'
+    # Usar lambda como reemplazador: re.sub NO procesa \n, \t, etc. en el
+    # valor devuelto por una función, evitando que los escapes JSON se
+    # conviertan en saltos de línea reales.
+    new_text = f'const {name} = {js_value};'
+    new_content, n = re.subn(pattern, lambda m: new_text, content, count=1)
     if n == 0:
         print(f"  ⚠️  'const {name}' no encontrado en index.html — omitido.")
     return new_content
