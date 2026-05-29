@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Acción Bioeconomía — Eje Cafetero</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+/* ── tokens ── */
+:root{
+  --g:#0f3d36;--g-pale:#e8f5ef;--g-mid:#1a5c52;--g-border:#9fd3c7;
+  --e:#b45309;--e-pale:#fffbeb;--e-mid:#d97706;--e-border:#fde68a;
+  --m:#15803d;--m-pale:#f0fdf4;--m-mid:#16a34a;--m-border:#bbf7d0;
+  --gray:#f8fafc;--border:#e2e8f0;--text:#0f172a;--muted:#64748b;
+  --red:#dc2626;--red-pale:#fef2f2;
+  --radius:10px;--shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--text);font-size:15px;line-height:1.6}
+
+/* ── header ── */
+.top-bar{background:#0f3d36;color:#fff;padding:14px 28px;display:flex;align-items:center;gap:14px}
+.top-bar .logo{font-size:1.6rem;flex-shrink:0}
+.top-bar h1{font-size:1rem;font-weight:700;line-height:1.3}
+.top-bar p{font-size:.75rem;opacity:.6;margin-top:2px}
+.top-bar .badge{margin-left:auto;background:#1a5c52;color:#9fd3c7;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+
+.region-row{background:#0a2e28;display:flex;padding:0 28px;overflow-x:auto;scrollbar-width:none}
+.region-row::-webkit-scrollbar{display:none}
+.rtab{padding:10px 16px;font-size:.82rem;font-weight:600;color:rgba(255,255,255,.4);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.rtab.active{color:#fff;border-bottom-color:#4ade80}
+.rtab.off{cursor:not-allowed;opacity:.25;pointer-events:none}
+
+/* ── layout ── */
+.app{display:grid;grid-template-columns:256px 1fr;min-height:calc(100vh - 88px)}
+
+/* ── sidebar ── */
+.sidebar{background:#fff;border-right:1px solid var(--border);padding:18px 16px;display:flex;flex-direction:column;gap:20px;position:sticky;top:0;height:calc(100vh - 88px);overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sb-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.clr-btn{font-size:.68rem;background:none;border:none;color:var(--muted);cursor:pointer;padding:1px 6px;border-radius:4px}
+.clr-btn:hover{color:var(--e);background:var(--e-pale)}
+
+.search-wrap{position:relative}
+.search-wrap input{width:100%;padding:8px 10px 8px 32px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;background:var(--gray);outline:none;color:var(--text)}
+.search-wrap input:focus{border-color:var(--g-mid);background:#fff}
+.search-wrap .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:.95rem}
+
+/* filter pills */
+.pills{display:flex;flex-direction:column;gap:5px}
+.pill{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:#fff;font-size:.82rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;position:relative}
+.pill:hover{border-color:var(--g-mid)}
+.pill.on{color:#fff;border-color:transparent}
+.pill[data-dim="Gobernanza y Social"].on{background:var(--g)}
+.pill[data-dim="Económica"].on{background:var(--e)}
+.pill[data-dim="Medio Ambiente"].on{background:var(--m)}
+.pill[data-tem].on{background:#475569;color:#fff}
+.pill .cnt{margin-left:auto;font-size:.7rem;opacity:.65;font-weight:600}
+.dim-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.dot-g{background:var(--g)}
+.dot-e{background:var(--e)}
+.dot-m{background:var(--m)}
+
+/* stats */
+.stat-row{display:flex;gap:7px}
+.stat{flex:1;background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:9px 6px;text-align:center}
+.stat b{display:block;font-size:1.4rem;font-weight:800;color:var(--g)}
+.stat span{font-size:.63rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+
+/* data-actions */
+.sb-actions{display:flex;flex-direction:column;gap:5px}
+.sb-btn{display:flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:.81rem;cursor:pointer;transition:all .15s;width:100%;color:var(--text)}
+.sb-btn:hover{border-color:var(--g-mid);background:var(--g-pale)}
+.sb-btn.danger:hover{border-color:var(--red);color:var(--red);background:var(--red-pale)}
+
+/* biowiki */
+.bw-card{background:linear-gradient(135deg,#0f3d36,#1a5c52);border-radius:var(--radius);padding:14px;color:#fff}
+.bw-card h4{font-size:.85rem;font-weight:700;margin-bottom:5px}
+.bw-card p{font-size:.73rem;opacity:.8;line-height:1.5;margin-bottom:11px}
+.bw-open{width:100%;padding:7px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:7px;color:#fff;font-size:.8rem;font-weight:600;cursor:pointer;transition:background .2s}
+.bw-open:hover{background:rgba(255,255,255,.25)}
+
+/* ── main content ── */
+.content{padding:24px;overflow-y:auto}
+.content-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.content-bar h2{font-size:1rem;font-weight:700;color:#0f172a}
+.content-bar small{color:var(--muted);font-size:.78rem}
+.controls{display:flex;align-items:center;gap:8px}
+.view-tog{display:flex;background:#fff;border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.vb{padding:5px 10px;border:none;border-radius:6px;font-size:.77rem;background:transparent;color:var(--muted);cursor:pointer}
+.vb.on{background:#0f3d36;color:#fff}
+.add-btn{display:flex;align-items:center;gap:6px;background:var(--g);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:.82rem;font-weight:700;cursor:pointer;transition:background .2s}
+.add-btn:hover{background:#0a2e28}
+
+/* ── dimension sections ── */
+.dim-section{margin-bottom:28px}
+.dim-heading{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--border)}
+.dim-heading .dh-code{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;padding:3px 10px;border-radius:20px}
+.dim-heading .dh-name{font-size:1rem;font-weight:700}
+.dim-heading .dh-count{margin-left:auto;font-size:.75rem;color:var(--muted)}
+.dim-G .dh-code{background:var(--g-pale);color:var(--g)}
+.dim-G .dh-name{color:var(--g)}
+.dim-G .dim-heading{border-bottom-color:var(--g-border)}
+.dim-E .dh-code{background:var(--e-pale);color:var(--e)}
+.dim-E .dh-name{color:var(--e)}
+.dim-E .dim-heading{border-bottom-color:var(--e-border)}
+.dim-M .dh-code{background:var(--m-pale);color:var(--m)}
+.dim-M .dh-name{color:var(--m)}
+.dim-M .dim-heading{border-bottom-color:var(--m-border)}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.cards-grid.list-v{grid-template-columns:1fr}
+
+/* ── card ── */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:all .2s;position:relative;box-shadow:var(--shadow)}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.card-top{padding:13px 14px 10px;display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.code-badge{font-size:1.1rem;font-weight:800;min-width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;letter-spacing:-.02em}
+.dim-G .code-badge{background:var(--g-pale);color:var(--g)}
+.dim-E .code-badge{background:var(--e-pale);color:var(--e)}
+.dim-M .code-badge{background:var(--m-pale);color:var(--m)}
+.card-head-meta{flex:1;min-width:0}
+.tem-tag{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:5px}
+.dim-G .tem-tag{background:var(--g-pale);color:var(--g)}
+.dim-E .tem-tag{background:var(--e-pale);color:var(--e)}
+.dim-M .tem-tag{background:var(--m-pale);color:var(--m)}
+.card-meta-title{font-size:.88rem;font-weight:700;line-height:1.38;color:var(--text)}
+.card-body{padding:0 14px 10px;cursor:pointer;flex:1}
+.brecha-preview{font-size:.78rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-footer{padding:9px 14px;border-top:1px solid var(--border);background:var(--gray);display:flex;align-items:center;gap:6px}
+.tl-bar{display:flex;gap:3px;flex:1}
+.tl-seg{height:5px;border-radius:3px;flex:1;background:var(--border)}
+.tl-seg.c{background:#22c55e}.tl-seg.m{background:#f59e0b}.tl-seg.l{background:#6366f1}
+.card-hint{font-size:.68rem;color:var(--muted)}
+
+/* reviewed badge */
+.rev-btn{padding:3px 8px;border-radius:5px;border:1px solid var(--border);background:#fff;font-size:.7rem;color:var(--muted);cursor:pointer;transition:all .15s;flex-shrink:0}
+.rev-btn.done{background:#dcfce7;border-color:#86efac;color:#166534;font-weight:600}
+.rev-btn:hover:not(.done){border-color:#22c55e;color:#16a34a}
+
+/* card action buttons */
+.card-acts{position:absolute;top:8px;right:8px;display:none;gap:4px;z-index:3}
+.card:hover .card-acts{display:flex}
+.ca{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:.82rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.12);transition:all .15s}
+.ca.ed{background:#fff;color:var(--g)}.ca.dl{background:#fff;color:var(--red)}
+.ca:hover{transform:scale(1.1)}
+
+/* list view card */
+.cards-grid.list-v .card{flex-direction:row;align-items:stretch}
+.cards-grid.list-v .card-top{width:200px;flex-shrink:0;flex-direction:column;background:var(--gray);border-right:1px solid var(--border);cursor:pointer}
+.cards-grid.list-v .card-body{padding:14px}
+.cards-grid.list-v .card-footer{border-top:none;border-left:1px solid var(--border);min-width:100px;flex-direction:column;align-items:stretch}
+.cards-grid.list-v .tl-bar{flex-direction:column;height:50px}
+.cards-grid.list-v .card-acts{top:6px;right:6px}
+
+/* no results */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty .ei{font-size:2.5rem;margin-bottom:10px}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:900px;margin:auto;box-shadow:0 24px 60px rgba(0,0,0,.25);display:flex;flex-direction:column;animation:mIn .18s ease}
+@keyframes mIn{from{transform:scale(.97);opacity:0}to{transform:scale(1);opacity:1}}
+
+.modal-head{padding:20px 24px 0;border-bottom:1px solid var(--border);flex-shrink:0}
+.modal-head-top{display:flex;align-items:flex-start;gap:12px;padding-bottom:14px}
+.mh-code{font-size:1.4rem;font-weight:800;min-width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mh-code.dim-G{background:var(--g-pale);color:var(--g)}
+.mh-code.dim-E{background:var(--e-pale);color:var(--e)}
+.mh-code.dim-M{background:var(--m-pale);color:var(--m)}
+.mh-info{flex:1;min-width:0}
+.mh-top-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:7px}
+.mh-dim-tag{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:5px}
+.mh-tem-tag{font-size:.7rem;padding:3px 9px;border-radius:5px;background:var(--gray);color:var(--muted);border:1px solid var(--border)}
+.mh-title{font-size:1.05rem;font-weight:700;line-height:1.4}
+.modal-close{background:var(--gray);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);transition:all .15s;margin-left:8px}
+.modal-close:hover{background:var(--red-pale);color:var(--red);border-color:#fca5a5}
+
+/* tabs */
+.modal-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding-top:4px}
+.modal-tabs::-webkit-scrollbar{display:none}
+.mtab{padding:10px 16px;border:none;background:transparent;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s}
+.mtab.on{color:var(--text);border-bottom-color:var(--g)}
+.mtab:hover:not(.on){color:var(--text)}
+
+.modal-body{padding:22px 24px;overflow-y:auto;max-height:60vh;flex:1}
+
+/* view content */
+.vc-section{margin-bottom:20px}
+.vc-section h4{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:9px}
+.problem-box{background:#fff8f0;border-left:3px solid var(--e-mid);padding:12px 15px;border-radius:0 8px 8px 0;font-size:.87rem;line-height:1.65}
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.bullet-list li{display:flex;gap:8px;font-size:.87rem;line-height:1.55}
+.bullet-list li::before{content:"▸";color:var(--muted);flex-shrink:0;font-size:.8rem;margin-top:3px}
+.plan-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.plan-col{border-radius:10px;padding:13px}
+.plan-col.c{background:#f0fdf4;border:1px solid #86efac}
+.plan-col.m{background:#fffbeb;border:1px solid #fde68a}
+.plan-col.l{background:#eef2ff;border:1px solid var(--g-border)}
+.plan-col-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.plan-col.c .plan-col-label{color:#15803d}
+.plan-col.m .plan-col-label{color:var(--e)}
+.plan-col.l .plan-col-label{color:var(--g)}
+.zones-box{background:var(--gray);border-radius:8px;padding:11px 14px;font-size:.87rem;line-height:1.6}
+.actor-chips{display:flex;flex-wrap:wrap;gap:6px}
+.actor-chip{background:#dcfce7;color:#0f3d36;border-radius:5px;padding:3px 9px;font-size:.78rem;font-weight:500}
+.source-chips{display:flex;flex-wrap:wrap;gap:5px}
+.source-chip{background:var(--gray);border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:2px 8px;font-size:.72rem;font-family:monospace}
+
+/* edit form */
+.edit-form{display:flex;flex-direction:column;gap:16px}
+.ef-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-family:inherit;color:var(--text);background:#fff;outline:none;transition:border-color .15s;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--g-mid)}
+.fg textarea{min-height:70px}
+.tl-edit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tl-edit-col{border-radius:9px;padding:11px;display:flex;flex-direction:column;gap:7px}
+.tl-edit-col.c{background:#f0fdf4;border:1px solid #86efac}
+.tl-edit-col.m{background:#fffbeb;border:1px solid #fde68a}
+.tl-edit-col.l{background:#eef2ff;border:1px solid var(--g-border)}
+.tl-edit-col .tel{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.tl-edit-col.c .tel{color:#15803d}
+.tl-edit-col.m .tel{color:var(--e)}
+.tl-edit-col.l .tel{color:var(--g)}
+
+/* list editor */
+.le{display:flex;flex-direction:column;gap:5px}
+.le-item{display:flex;gap:4px;align-items:flex-start}
+.le-item textarea{flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:.81rem;font-family:inherit;resize:vertical;min-height:46px;outline:none;background:#fff}
+.le-item textarea:focus{border-color:var(--g-mid)}
+.le-item textarea.sm{min-height:32px}
+.le-x{width:24px;height:24px;border:none;background:var(--red-pale);color:var(--red);border-radius:5px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.le-x:hover{background:var(--red);color:#fff}
+.le-add{display:flex;align-items:center;gap:4px;border:1px dashed;border-radius:6px;padding:4px 8px;font-size:.76rem;font-weight:600;cursor:pointer;background:rgba(255,255,255,.7);opacity:.7;transition:opacity .15s}
+.le-add:hover{opacity:1}
+.tl-edit-col.c .le-add{color:#15803d;border-color:#86efac}
+.tl-edit-col.m .le-add{color:var(--e);border-color:#fde68a}
+.tl-edit-col.l .le-add{color:var(--g);border-color:var(--g-border)}
+.le-add-plain{color:var(--g);border-color:var(--g-border);background:var(--g-pale)}
+
+/* modal footer */
+.modal-foot{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:#f8fafc;flex-shrink:0;border-radius:0 0 14px 14px}
+.btn{padding:8px 18px;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;border:none;transition:all .15s}
+.btn-p{background:var(--g);color:#fff}.btn-p:hover{background:#0a2e28}
+.btn-s{background:#fff;color:var(--text);border:1px solid var(--border)}.btn-s:hover{border-color:var(--g-mid)}
+.btn-d{background:var(--red-pale);color:var(--red);border:1px solid #fca5a5}.btn-d:hover{background:var(--red);color:#fff}
+.btn-e{background:var(--g-pale);color:var(--g);border:1px solid var(--g-border)}.btn-e:hover{background:var(--g);color:#fff}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:72px;right:22px;z-index:2100;background:#0f172a;color:#fff;padding:9px 16px;border-radius:9px;font-size:.83rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.2);transform:translateY(16px);opacity:0;transition:all .2s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── confirm ── */
+.conf-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1200;align-items:center;justify-content:center}
+.conf-overlay.open{display:flex}
+.conf-box{background:#fff;border-radius:12px;padding:26px;max-width:340px;width:100%;box-shadow:0 16px 40px rgba(0,0,0,.2);text-align:center}
+.conf-box h3{font-size:.95rem;font-weight:700;margin-bottom:7px}
+.conf-box p{font-size:.83rem;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.conf-btns{display:flex;gap:8px;justify-content:center}
+
+/* ── biowiki panel ── */
+.bw-overlay{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px}
+.bw-overlay.open{display:flex}
+.bw-win{background:#fff;border-radius:14px;width:100%;max-width:1040px;height:83vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.bw-head{display:flex;align-items:center;gap:12px;padding:13px 18px;background:#0f3d36;color:#fff;flex-shrink:0}
+.bw-head h3{font-size:.93rem;font-weight:700}
+.bw-head span{font-size:.73rem;opacity:.6}
+.bw-head .bwx{margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center}
+.bw-head .bwx:hover{background:rgba(255,255,255,.25)}
+.bw-win iframe{flex:1;border:none;width:100%}
+.bw-ext{padding:7px 18px;background:#f8fafc;border-top:1px solid var(--border);font-size:.77rem;color:var(--muted);flex-shrink:0}
+.bw-ext a{color:var(--g);text-decoration:none;font-weight:600}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:20px;right:20px;z-index:500}
+.fab-btn{display:flex;align-items:center;gap:7px;background:var(--m);color:#fff;border:none;border-radius:28px;padding:11px 17px;font-size:.86rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(21,128,61,.35);transition:all .2s}
+.fab-btn:hover{background:var(--g);transform:translateY(-2px)}
+
+/* plan section responsive — merged below with actores/pres */
+
+/* ── section tabs (Plan / Actores) ── */
+.section-row{background:#0f3d36;display:flex;padding:0 28px;border-bottom:2px solid #0a2e28}
+.stab{padding:9px 22px;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.4);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;margin-bottom:-2px}
+.stab.active{color:#fff;border-bottom-color:#22c55e}
+.stab:hover:not(.active){color:rgba(255,255,255,.75)}
+
+/* ── actores layout ── */
+.actores-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:#fff;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:10}
+.actores-bar h2{font-size:1rem;font-weight:700}
+.actores-bar small{font-size:.77rem;color:var(--muted)}
+.av-controls{display:flex;align-items:center;gap:10px}
+.av-toggle{display:flex;background:var(--gray);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px}
+.avb{padding:5px 12px;border:none;border-radius:6px;font-size:.78rem;background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;font-weight:600}
+.avb.on{background:#0f3d36;color:#fff}
+.pres-start-btn{display:flex;align-items:center;gap:6px;background:#0f3d36;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:.83rem;font-weight:700;cursor:pointer;transition:background .2s}
+.pres-start-btn:hover{background:#0a2e28}
+.av-content{padding:28px}
+
+/* ── org cards ── */
+.orgs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin-bottom:40px}
+.org-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .2s;box-shadow:var(--shadow)}
+.org-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.org-card-top{padding:16px;display:flex;gap:14px;align-items:flex-start}
+.org-logo{width:72px;height:72px;object-fit:contain;border-radius:8px;background:var(--gray);border:1px solid var(--border);flex-shrink:0;padding:5px}
+.org-logo-ph{width:72px;height:72px;border-radius:8px;background:linear-gradient(135deg,#0f172a,#1e3a5f);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;flex-shrink:0}
+.org-info{flex:1;min-width:0}
+.org-name{font-size:.88rem;font-weight:700;line-height:1.35;margin-bottom:7px}
+.org-kws{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.org-kw{background:var(--g-pale);color:var(--g);border-radius:4px;padding:2px 7px;font-size:.67rem;font-weight:600}
+.org-coord-dot{font-size:.65rem;background:#dcfce7;color:#15803d;border-radius:4px;padding:1px 6px;font-weight:600}
+.org-body{padding:0 16px 10px;font-size:.78rem;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.org-footer{padding:9px 16px;border-top:1px solid var(--border);background:var(--gray);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.org-pcount{font-size:.71rem;color:var(--muted);flex:1}
+.org-ext-link{font-size:.71rem;color:var(--g);text-decoration:none;font-weight:600;padding:2px 6px;border-radius:4px;background:var(--g-pale)}
+.org-ext-link:hover{text-decoration:underline}
+
+/* ── people section ── */
+.people-section-hd{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:20px}
+.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.person-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:13px;display:flex;gap:11px;align-items:flex-start;box-shadow:var(--shadow)}
+.p-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:800;flex-shrink:0;background:linear-gradient(135deg,#0f3d36,#1a5c52);color:#fff;text-transform:uppercase}
+.p-avatar.f{background:linear-gradient(135deg,#be185d,#db2777)}
+.p-info{flex:1;min-width:0}
+.p-name{font-size:.85rem;font-weight:700;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-cargo{font-size:.73rem;color:var(--muted);margin-bottom:4px;line-height:1.35}
+.p-badges{display:flex;flex-wrap:wrap;gap:4px}
+.p-dept{font-size:.65rem;background:var(--gray);border:1px solid var(--border);border-radius:4px;padding:1px 6px;color:var(--muted)}
+.p-org-tag{font-size:.65rem;background:var(--g-pale);color:var(--g);border-radius:4px;padding:1px 6px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.p-link{font-size:.65rem;color:var(--g-mid);text-decoration:none}
+
+/* ── org card — whole card clickable ── */
+.org-card{cursor:pointer}
+.org-card:hover .org-footer{background:var(--g-pale)}
+.org-details-hint{font-size:.71rem;color:var(--g);font-weight:600;margin-left:auto;opacity:.8}
+
+/* ── org popup ── */
+.org-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1100;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.org-overlay.open{display:flex}
+.org-modal{background:#fff;border-radius:14px;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.28);animation:mIn .18s ease;margin:auto}
+.org-modal-head{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:14px;flex-shrink:0}
+.org-modal-logo{width:70px;height:70px;object-fit:contain;border-radius:10px;background:var(--gray);border:1px solid var(--border);padding:5px;flex-shrink:0}
+.org-modal-logo-ph{width:70px;height:70px;border-radius:10px;background:linear-gradient(135deg,#0f3d36,#1a5c52);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;flex-shrink:0}
+.org-modal-info{flex:1;min-width:0}
+.org-modal-name{font-size:1.05rem;font-weight:800;line-height:1.3;margin-bottom:8px;color:var(--text)}
+.org-modal-kws{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.org-modal-links{display:flex;gap:7px;flex-wrap:wrap}
+.org-modal-link{font-size:.75rem;color:var(--g);text-decoration:none;font-weight:600;padding:4px 11px;border:1px solid var(--g-border);border-radius:6px;background:var(--g-pale);transition:all .15s}
+.org-modal-link:hover{background:var(--g);color:#fff}
+.org-modal-close{margin-left:8px;flex-shrink:0;background:var(--gray);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s}
+.org-modal-close:hover{background:#fef2f2;color:#dc2626;border-color:#fca5a5}
+.org-modal-body{padding:20px 22px;overflow-y:auto;flex:1}
+.org-modal-bio{font-size:.87rem;color:var(--text);line-height:1.72;background:var(--gray);border-radius:8px;padding:13px 15px;border:1px solid var(--border);margin-bottom:20px}
+.org-modal-people-hd{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:12px;padding-top:4px;border-top:1px solid var(--border);padding-top:16px}
+.org-modal-people{display:flex;flex-direction:column;gap:9px}
+.org-modal-person{display:flex;align-items:flex-start;gap:11px;background:var(--gray);border-radius:9px;padding:11px 13px;border:1px solid var(--border)}
+.org-modal-foot{padding:13px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;background:var(--gray);border-radius:0 0 14px 14px;flex-shrink:0}
+
+/* ── map ── */
+.map-wrap{display:grid;grid-template-columns:1fr 270px;gap:20px;align-items:start}
+#leaflet-map{height:520px;border-radius:var(--radius);border:1px solid var(--border)}
+.map-legend{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:16px}
+.map-legend h4{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+.map-org-item{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;border-radius:6px;padding:6px 4px}
+.map-org-item:hover{background:var(--gray)}
+.map-org-item:last-child{border-bottom:none}
+.map-org-item img{width:34px;height:34px;object-fit:contain;border-radius:6px;background:var(--gray);padding:3px;border:1px solid var(--border);flex-shrink:0}
+.map-org-name{font-size:.75rem;font-weight:600;line-height:1.3}
+.map-org-nocoord{opacity:.35;cursor:default}
+.map-org-nocoord:hover{background:transparent}
+.lf-popup-inner{font-family:'Segoe UI',system-ui,sans-serif;min-width:180px;text-align:center}
+.lf-popup-inner img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:#f8fafc;border:1px solid #e2e8f0;padding:4px;margin:0 auto 8px;display:block}
+.lf-popup-name{font-weight:700;font-size:.9rem;margin-bottom:6px}
+.lf-popup-kws{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.lf-popup-kws span{background:#e8f5ef;color:#0f3d36;border-radius:4px;padding:1px 6px;font-size:.67rem;font-weight:600}
+.lf-popup-count{margin-top:7px;font-size:.72rem;color:#64748b}
+
+/* ── PRESENTATION ── */
+.pres-overlay{display:none;position:fixed;inset:0;z-index:3000;background:#071a17;flex-direction:column}
+.pres-overlay.open{display:flex}
+
+/* slide area: CSS Grid — left col fixed, right fills rest */
+.pres-slide-area{
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns:clamp(140px,20vw,260px) 1fr;
+  grid-template-rows:1fr;
+  padding:clamp(10px,2vh,36px) clamp(14px,2.5vw,52px);
+  gap:clamp(12px,2vw,44px);
+  overflow:hidden;
+}
+
+/* left panel: grid cell fills row height — flex centers content */
+.pres-left{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:clamp(7px,1.2vh,14px);
+  min-height:0;overflow:hidden;
+}
+.pres-logo-wrap,.pres-logo-ph{
+  width:clamp(80px,14vw,180px);
+  height:clamp(80px,14vw,180px);
+  background:rgba(255,255,255,.08);border-radius:clamp(10px,2vw,18px);
+  display:flex;align-items:center;justify-content:center;
+  padding:clamp(8px,1vw,14px);flex-shrink:0;
+}
+.pres-logo-wrap img{max-width:100%;max-height:100%;object-fit:contain}
+.pres-logo-ph{font-size:clamp(1.4rem,4vw,2.5rem);font-weight:800;color:rgba(255,255,255,.7)}
+.pres-org-name{
+  font-size:clamp(.8rem,1.6vw,1.2rem);font-weight:800;color:#fff;
+  text-align:center;line-height:1.3;
+  word-break:break-word;
+}
+.pres-kw-row{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.pres-kw{
+  background:rgba(15,61,54,.6);color:#9fd3c7;
+  border-radius:20px;padding:2px 8px;
+  font-size:clamp(.6rem,1vw,.72rem);font-weight:600;
+  border:1px solid rgba(159,211,199,.3);
+}
+.pres-ext-links{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.pres-ext-link{
+  color:rgba(255,255,255,.55);text-decoration:none;
+  font-size:clamp(.62rem,.9vw,.73rem);font-weight:600;
+  padding:3px 8px;border:1px solid rgba(255,255,255,.2);border-radius:6px;transition:all .15s;
+}
+.pres-ext-link:hover{color:#fff;border-color:rgba(255,255,255,.5)}
+
+/* right = content + map — each takes equal flex when map is shown */
+.pres-right{display:flex;gap:clamp(10px,1.5vw,20px);overflow:hidden;min-width:0;min-height:0}
+.pres-right-content{
+  flex:1;min-width:0;min-height:0;
+  display:flex;flex-direction:column;
+  justify-content:center;
+  gap:clamp(8px,1.2vh,16px);
+  overflow:hidden;
+}
+/* map panel: same flex as content → exactly 50% of the right area */
+.pres-map-panel{
+  flex:1;min-width:0;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;gap:6px;
+  overflow:hidden;
+}
+#pres-map{
+  width:100%;
+  height:clamp(200px,55vh,520px);
+  border-radius:clamp(8px,1.5vw,14px);
+  border:2px solid rgba(159,211,199,.25);
+}
+.pres-map-coord{font-size:clamp(.6rem,.8vw,.7rem);color:rgba(159,211,199,.55);text-align:center;letter-spacing:.04em;flex-shrink:0}
+
+.pres-bio{
+  font-size:clamp(.75rem,1.3vw,.9rem);color:rgba(255,255,255,.7);line-height:1.65;
+  display:-webkit-box;-webkit-line-clamp:4;line-clamp:4;
+  -webkit-box-orient:vertical;overflow:hidden;flex-shrink:0;
+}
+.pres-people-lbl{
+  font-size:clamp(.58rem,.8vw,.65rem);font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:rgba(255,255,255,.35);flex-shrink:0;
+}
+.pres-people-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(clamp(150px,18vw,200px),1fr));
+  gap:clamp(5px,.8vw,9px);
+  overflow-y:auto;
+  max-height:clamp(130px,38vh,300px);
+  align-content:start;
+}
+.pres-person-card{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  border-radius:clamp(6px,1vw,10px);
+  padding:clamp(7px,1vh,11px);
+  display:flex;gap:clamp(6px,.8vw,10px);align-items:flex-start;
+}
+.pres-av{
+  width:clamp(28px,3.5vw,38px);height:clamp(28px,3.5vw,38px);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(.72rem,1.1vw,.85rem);font-weight:700;flex-shrink:0;
+  background:rgba(26,92,82,.5);color:#9fd3c7;text-transform:uppercase;
+}
+.pres-av.f{background:rgba(190,24,93,.3);color:#fbcfe8}
+.pres-pname{font-size:clamp(.72rem,1.1vw,.82rem);font-weight:700;color:#fff;margin-bottom:1px}
+.pres-pcargo{font-size:clamp(.62rem,.95vw,.71rem);color:rgba(255,255,255,.5);line-height:1.35}
+.pres-no-people{color:rgba(255,255,255,.3);font-style:italic;font-size:.82rem;padding:16px 0}
+
+/* bottom bar */
+.pres-bottom{
+  background:rgba(0,0,0,.3);
+  padding:0 clamp(12px,2vw,32px) clamp(8px,1.5vh,16px);
+  flex-shrink:0;
+}
+.pres-progress-track{height:3px;background:rgba(255,255,255,.1);border-radius:3px;margin-bottom:clamp(8px,1.2vh,14px)}
+.pres-progress-fill{height:100%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:3px;transition:width .25s linear;width:0%}
+.pres-controls{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(5px,.8vw,10px);flex-wrap:wrap;
+}
+.pres-ctrl{
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);color:#fff;
+  border-radius:8px;
+  padding:clamp(5px,.8vh,7px) clamp(10px,1.4vw,18px);
+  font-size:clamp(.7rem,1.1vw,.81rem);font-weight:600;cursor:pointer;transition:all .15s;
+  white-space:nowrap;
+}
+.pres-ctrl:hover{background:rgba(255,255,255,.18)}
+.pres-ctrl.exit{background:rgba(220,38,38,.18);border-color:rgba(220,38,38,.3);color:#fca5a5}
+.pres-ctrl.exit:hover{background:rgba(220,38,38,.35)}
+.pres-slide-num{color:rgba(255,255,255,.35);font-size:clamp(.68rem,1vw,.78rem);min-width:44px;text-align:center}
+
+/* ── all responsive breakpoints ── */
+@media(max-width:900px){
+  /* presentation: grid collapses to single column */
+  .pres-slide-area{
+    grid-template-columns:1fr;
+    grid-template-rows:auto 1fr;
+    overflow-y:auto;
+  }
+  /* left panel becomes a horizontal banner at top */
+  .pres-left{
+    flex-direction:row;flex-wrap:wrap;
+    justify-content:center;align-items:center;
+    gap:10px 16px;
+    padding:10px 0 14px;
+    border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  .pres-logo-wrap,.pres-logo-ph{width:clamp(56px,10vw,90px);height:clamp(56px,10vw,90px)}
+  .pres-org-name{font-size:clamp(.85rem,2.5vw,1.1rem);text-align:left}
+  .pres-right{flex-direction:column;min-height:0}
+  .pres-right-content{flex:none}
+  .pres-bio{-webkit-line-clamp:3;line-clamp:3}
+  .pres-map-panel{flex:none;height:clamp(180px,30vh,260px)}
+  #pres-map{flex:none;height:100%}
+  .pres-people-grid{grid-template-columns:1fr 1fr;max-height:160px;flex:none}
+}
+@media(max-width:540px){
+  .pres-people-grid{grid-template-columns:1fr}
+  .pres-ctrl{padding:5px 10px;font-size:.7rem}
+  .pres-slide-area{padding:8px 12px;gap:10px}
+}
+/* plan + actores responsive */
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .sidebar{height:auto;position:static}
+  .plan-cols,.tl-edit-grid,.ef-row{grid-template-columns:1fr}
+  .cards-grid.list-v .card{flex-direction:column}
+  .cards-grid.list-v .card-top{width:100%;border-right:none;border-bottom:1px solid var(--border)}
+  .map-wrap{grid-template-columns:1fr}
+  .orgs-grid,.people-grid{grid-template-columns:1fr}
+  .av-content{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">🌿</div>
+  <div>
+    <h1>Plan de Acción de Bioeconomía — Regiones de Colombia</h1>
+    <p>Acciones propuestas para revisión y ajuste participativo · Taller regional</p>
+  </div>
+  <div class="badge">2025–2035</div>
+</div>
+
+<div class="region-row">
+  <button class="rtab off">Caribe</button>
+  <button class="rtab active">Eje Cafetero</button>
+  <button class="rtab off">Pacífico</button>
+  <button class="rtab off">Centro Sur Amazonia</button>
+  <button class="rtab off">Centro Oriente</button>
+  <button class="rtab off">Los Llanos</button>
+</div>
+
+<div class="section-row">
+  <button class="stab active" id="stab-plan" onclick="switchSection('plan')">📋 Plan de acción</button>
+  <button class="stab" id="stab-actores" onclick="switchSection('actores')">👥 Actores del evento</button>
+</div>
+
+<div id="plan-section"><div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div>
+    <div class="sb-title">Buscar</div>
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input id="search" type="text" placeholder="Buscar en acciones…">
+    </div>
+  </div>
+
+  <div>
+    <div class="sb-title">Resumen</div>
+    <div class="stat-row">
+      <div class="stat"><b id="st-total">12</b><span>Total</span></div>
+      <div class="stat"><b id="st-visible">12</b><span>Visibles</span></div>
+      <div class="stat"><b id="st-rev">0</b><span>Revisadas</span></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="sb-title">Dimensión <button class="clr-btn" onclick="resetF('dim')">Limpiar</button></div>
+    <div class="pills" id="dim-pills">
+      <button class="pill" data-dim="Gobernanza y Social" onclick="toggleF('dim','Gobernanza y Social',this)">
+        <span class="dim-dot dot-g"></span>Gobernanza y Social<span class="cnt" id="c-G"></span>
+      </button>
+      <button class="pill" data-dim="Económica" onclick="toggleF('dim','Económica',this)">
+        <span class="dim-dot dot-e"></span>Económica<span class="cnt" id="c-E"></span>
+      </button>
+      <button class="pill" data-dim="Medio Ambiente" onclick="toggleF('dim','Medio Ambiente',this)">
+        <span class="dim-dot dot-m"></span>Medio Ambiente<span class="cnt" id="c-M"></span>
+      </button>
+    </div>
+  </div>
+
+  <div>
+    <div class="sb-title">Temática <button class="clr-btn" onclick="resetF('tem')">Limpiar</button></div>
+    <div class="pills" id="tem-pills"></div>
+  </div>
+
+  <div>
+    <div class="sb-title">Datos</div>
+    <div class="sb-actions">
+      <button class="sb-btn" onclick="exportJSON()">📥 Exportar JSON</button>
+      <button class="sb-btn danger" onclick="confirmReset()">↩ Restaurar originales</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="sb-title">Recursos</div>
+    <div class="bw-card">
+      <h4>🌐 Biowiki Colombia</h4>
+      <p>Enciclopedia de bioeconomía con cadenas de valor, actores, iniciativas y territorios.</p>
+      <button class="bw-open" onclick="openBW()">Abrir Biowiki →</button>
+    </div>
+  </div>
+</aside>
+
+<!-- CONTENT -->
+<main class="content">
+  <div class="content-bar">
+    <div>
+      <h2>Acciones — Eje Cafetero &amp; Antioquia</h2>
+      <small id="res-count">Mostrando 12 acciones</small>
+    </div>
+    <div class="controls">
+      <div class="view-tog">
+        <button class="vb on" id="vb-g" onclick="setView('g')">⊞ Tarjetas</button>
+        <button class="vb" id="vb-l" onclick="setView('l')">≡ Lista</button>
+      </div>
+      <button class="add-btn" onclick="openAdd()">＋ Nueva acción</button>
+    </div>
+  </div>
+  <div id="main-content"></div>
+</main>
+</div>
+</div><!-- /plan-section -->
+
+<!-- ═══════════════════════════ ACTORES ═══════════════════════════ -->
+<div id="actores-section" style="display:none">
+  <div class="actores-bar">
+    <div>
+      <h2>Actores del evento — Eje Cafetero</h2>
+      <small id="actores-stats">11 organizaciones · 17 participantes</small>
+    </div>
+    <div class="av-controls">
+      <div class="av-toggle">
+        <button class="avb on" id="avb-grid" onclick="setAV('grid')">⊞ Organizaciones</button>
+        <button class="avb" id="avb-map" onclick="setAV('map')">🗺 Mapa</button>
+      </div>
+      <button class="pres-start-btn" onclick="startPresentation()">▶ Presentación automática</button>
+    </div>
+  </div>
+
+  <!-- grid view -->
+  <div id="av-grid-view" class="av-content">
+    <div class="orgs-grid" id="orgs-grid"></div>
+    <div class="people-section-hd">👥 Participantes del taller<span style="font-weight:400;letter-spacing:0;text-transform:none;font-size:.78rem;color:var(--muted)" id="pcount-label"></span></div>
+    <div class="people-grid" id="people-grid"></div>
+  </div>
+
+  <!-- map view -->
+  <div id="av-map-view" class="av-content" style="display:none">
+    <div class="map-wrap">
+      <div id="leaflet-map"></div>
+      <div class="map-legend">
+        <h4>📍 Organizaciones</h4>
+        <div id="map-org-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW/EDIT MODAL -->
+<div class="overlay" id="modal" onclick="overlayClick(event,'modal')">
+<div class="modal">
+  <div class="modal-head">
+    <div class="modal-head-top">
+      <div class="mh-code" id="mh-code"></div>
+      <div class="mh-info">
+        <div class="mh-top-tags" id="mh-tags"></div>
+        <div class="mh-title" id="mh-title"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-tabs" id="modal-tabs"></div>
+  </div>
+  <div class="modal-body" id="modal-body"></div>
+  <div class="modal-foot" id="modal-foot"></div>
+</div>
+</div>
+
+<!-- BIOWIKI -->
+<div class="bw-overlay" id="bw-panel" onclick="overlayClick(event,'bw-panel')">
+  <div class="bw-win">
+    <div class="bw-head">
+      <div><h3>🌐 Biowiki Colombia</h3><span>Enciclopedia de Bioeconomía</span></div>
+      <button class="bwx" onclick="closeBW()">✕</button>
+    </div>
+    <iframe id="bw-frame" src="about:blank" title="Biowiki"></iframe>
+    <div class="bw-ext">¿No carga? <a href="https://brianamaya01.github.io/biolink_col/" target="_blank">Abrir en pestaña nueva →</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ ORG POPUP ═══════════════════ -->
+<div class="org-overlay" id="org-modal" onclick="closeOrgModal(event)">
+  <div class="org-modal">
+    <div class="org-modal-head">
+      <div id="om-logo-wrap"></div>
+      <div class="org-modal-info">
+        <div class="org-modal-name" id="om-name"></div>
+        <div class="org-modal-kws" id="om-kws"></div>
+        <div class="org-modal-links" id="om-links"></div>
+      </div>
+      <button class="org-modal-close" onclick="closeOrgModal()">✕</button>
+    </div>
+    <div class="org-modal-body">
+      <div class="org-modal-bio" id="om-bio"></div>
+      <div class="org-modal-people-hd" id="om-people-hd"></div>
+      <div class="org-modal-people" id="om-people"></div>
+    </div>
+    <div class="org-modal-foot">
+      <button class="btn btn-s" onclick="closeOrgModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PRESENTATION OVERLAY ═══════════════════ -->
+<div class="pres-overlay" id="pres-overlay">
+  <div class="pres-slide-area">
+    <div class="pres-left">
+      <div id="pres-logo-wrap" class="pres-logo-wrap">
+        <img id="pres-logo-img" src="" alt="">
+      </div>
+      <div class="pres-org-name" id="pres-org-name"></div>
+      <div class="pres-kw-row" id="pres-kws"></div>
+      <div class="pres-ext-links" id="pres-links"></div>
+    </div>
+    <div class="pres-right">
+      <div class="pres-right-content">
+        <div class="pres-bio" id="pres-bio"></div>
+        <div class="pres-people-lbl" id="pres-people-lbl"></div>
+        <div class="pres-people-grid" id="pres-people-grid"></div>
+      </div>
+      <div class="pres-map-panel" id="pres-map-panel" style="display:none">
+        <div id="pres-map"></div>
+        <div class="pres-map-coord" id="pres-map-coord"></div>
+      </div>
+    </div>
+  </div>
+  <div class="pres-bottom">
+    <div class="pres-progress-track"><div class="pres-progress-fill" id="pres-progress"></div></div>
+    <div class="pres-controls">
+      <button class="pres-ctrl" onclick="presMove(-1)">⟨ Anterior</button>
+      <button class="pres-ctrl" id="pres-play-btn" onclick="presTogglePlay()">⏸ Pausar</button>
+      <button class="pres-ctrl" onclick="presMove(1)">Siguiente ⟩</button>
+      <span class="pres-slide-num" id="pres-counter">1 / 11</span>
+      <button class="pres-ctrl exit" onclick="stopPresentation()">✕ Salir</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="conf-overlay" id="conf">
+  <div class="conf-box">
+    <h3 id="conf-t"></h3>
+    <p id="conf-m"></p>
+    <div class="conf-btns">
+      <button class="btn btn-s" onclick="confCancel()">Cancelar</button>
+      <button class="btn btn-d" id="conf-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="fab"><button class="fab-btn" onclick="openBW()">🌐 Biowiki</button></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// DEFAULT DATA
+// ═══════════════════════════════════════════
+const DEFAULT_DATA = [
+  {"Dimensión": "Gobernanza y Social", "Cód.": "G1", "Meta": "Arquitectura institucional regional mancomunada de bioeconomía Eje Cafetero–Antioquia", "Temática": "Gobernanza, indicadores y seguimiento", "Bechas identificadas": "• No existe gobernanza regional mancomunada entre los 4 departamentos.
+• PDD Caldas 2024-2027 no adopto aprendizajes de Biofábricas ni Misión Sabios
+", "Problemática a resolver": "Los cuatro departamentos operan con instrumentos desarticulados (Antioquia: PPCV 2040, Hoja de Ruta 2023-2026; Caldas: Ordenanza 952/2023 CTeI; Risaralda: NV CARDER; Quindío: FOLU 2019) sin mecanismo de gobernanza mancomunada. La Misión Nacional de Bioeconomía 2020 fue caracterizada como proceso centralizado que no incorporó intereses de comunidades locales ni enfatizó conservación de biodiversidad (Grilli et al. 2024). El PDD Caldas 2024-2027 no retoma los aprendizajes del Programa Biofábricas ni de la Misión Sabios — discontinuidad institucional grave. No existe un sistema de contabilidad del capital natural a escala subnacional que permita medir la bioeconomía territorial.", "Recomendaciones": "• Crear un Consejo Regional de Bioeconomía Eje Cafetero–Antioquia (CREA) con representación cuatripartita de gobernaciones, CAR, academia, sector privado y comunidades para compartir y centralizar información en bioeconomía. 
+• Adoptar la metodología BE-BSA (Grilli et al. 2024) como instrumento estandarizado de evaluación y apoyo a decisiones para priorizaciones territoriales.
+• Diseñar un protocolo de transferencia de aprendizajes entre planes de gobierno que facilite el fortalecimiento de la bioeconomía. 
+• Institucionalizar criterios de compras públicas sostenibles que prioricen bioproductos certificados de la región.", "Acciones Corto plazo (1-3 a.)": "• Inventario unificado de iniciativas y actores bioeconómicos en los 4 departamentos.
+• Firma del acuerdo intergubernamental de articulación bioeconómica con hoja de ruta compartida.
+• Incorporación del BE-BSA como instrumento de priorización en los próximos PDD.
+• Diseño de criterios de compras públicas sostenibles (prueba piloto en 3 gobernaciones).", "Acciones Mediano plazo (4-6 a.)": "• Operacionalización de un sistema de información compartido para centralizar información. 
+• Implementación piloto de la Red de Cuentas Complementarias (CAN) para dos departamentos.
+• Convocatoria regional conjunta de al menos 4 proyectos de cooperación internacional.
+• Programa de compras públicas verdes en 15+ municipios con ≥5% presupuesto en bioproductos.", "Acciones Largo plazo (+7 a.)": "• Integración del sistema de información con el Observatorio Nacional de Bioeconomía (MinCiencias).
+• Influencia territorial en la revisión de la Estrategia Nacional de Bioeconomía.
+• Sello 'Eje Cafetero Bioeconómico' reconocido por Colombia Compra Eficiente.", "Zonas de priorización": "Manizales, Pereira, Armenia, Medellín (capitales como nodos de gobernanza); secretarías de planeación y ambiente.", "Actores clave": "Gobernaciones de Antioquia, Caldas, Risaralda, Quindío; CARDER, CRQ, Corpocaldas, CORANTIOQUIA; MinCiencias, Instituto Humboldt, DANE, DNP; Parque Tecnológico Caldas, UTP, U. Manizales, Uniquindío, EAFIT.", "Fuentes / Referencias": "decision-support-procedure-bioeconomy-2024 · bioeconomy-report-four-regions-2021 · hoja-ruta-bioeconomia-antioquia-2023-2026 · plan-accion-carder-risaralda-2024-2027 · ordenanza-952-politica-ctei-caldas-2023 · folu-quindio-2019"},
+  {"Dimensión": "Gobernanza y Social", "Cód.": "G2", "Meta": "Cierre de brecha de capital humano rural–urbano en formación bio-relacionada territorial", "Temática": "Capital humano y formación técnica territorial", "Bechas identificadas": "• 96% de estudiantes asociados con estudios en bioeconomía estan concentrados en el área metropolitana
+
+", "Problemática a resolver": "En Antioquia, el 96% de los estudiantes en programas bio-relacionados se concentra en el área metropolitana, mientras el capital natural y la biodiversidad están en zonas rurales (Alviar et al. 2021). En Risaralda, la oferta en biotecnología existe solo a nivel profesional y posgrado, excluyendo técnicos, tecnólogos y jóvenes rurales. En Caldas, los docentes en zonas rurales reportan recursos insuficientes. En Quindío, el 14.1% de desempleo coincide con una economía en declive cafetera sin alternativas bio consolidadas. No existe un sistema de formación técnica-tecnológica-universitaria articulado en bioeconomía con trayectorias territoriales.", "Recomendaciones": "• Diseñar rutas de formación técnica y tecnológica en bioeconomía articuladas con SENA y universidades regionales, ancladas en vocaciones productivas de cada municipio.
+• Escalar el modelo educomunicativo del Programa Biofábricas (2022-2024) a las 6 subregiones de Caldas y municipios equivalentes en Risaralda y Quindío.
+• Diseñar pasantías y residencias en empresas bioeconómicas consolidadas para jóvenes rurales.", "Acciones Corto plazo (1-3 a.)": "• Diagnóstico de brecha de capital humano bio-relacionado desagregado por municipio y subregión.
+• Diseño e implementación de 4 currículas técnicas SENA adaptadas al territorio.
+• Programa de becas y estancias para jóvenes rurales en empresas bioeconómicas del Portafolio BIO IN.", "Acciones Mediano plazo (4-6 a.)": "• Centros de innovación bioeconómica rural en municipios piloto de alta biodiversidad (mín. 2/dpto).
+• Articulación de trayectorias técnico → tecnólogo → profesional en bioeconomía como oferta continua.
+• Programa 'Jóvenes Bioemprendedores' con capital semilla del Fondo Emprender y SGR.", "Acciones Largo plazo (+7 a.)": "• Sistema regional de educación en bioeconomía reconocido por MinEducación como modalidad territorial.
+• Reducción de brecha urbano-rural en matrícula bio-relacionada a menos del 70-30 (desde 96-4).
+• Instituciones educativas rurales con proyectos productivos bio integrados al currículo.", "Zonas de priorización": "Bajo Occidente y Centro-Sur Caldas (35% deserción escolar); Pueblo Rico y Mistrató (Risaralda); Bajo Cauca y Nordeste antioqueño; municipios cafeteros de Quindío con mayor desempleo (Génova, Pijao).", "Actores clave": "SENA, MinEducación, Gobernaciones, CINDE, U. Manizales, UTP, Uniquindío, U. Antioquia, BIOS, Instituto Humboldt, Comités de Cafeteros, Ecoflora Cares, Levapan, Aitia Biotech.", "Fuentes / Referencias": "measuring-bioeconomy-antioquia-2021 · biofabricas-caldas-2024 · tejido-empresarial-biotecnologia-risaralda-2019 · folu-quindio-2019 · estrategia-bioeconomia-antioquia-2023"},
+  {"Dimensión": "Gobernanza y Social", "Cód.": "G3", "Meta": "Integración equitativa de saberes ancestrales Embera y comunidades afrodescendientes en cadenas de valor", "Temática": "Conocimiento ancestral y diversidad biocultural", "Bechas identificadas": "• 67% ISAH hogares antioqueños; 1.65M ton pérdida y desperdicio Eje Cafetero/año
+• Comunidades Embera sin integración en cadenas de valor bioeconómicas
+", "Problemática a resolver": "Las comunidades Embera de Caldas (12 municipios del occidente) custodian ecosaberes y biodiversidad estratégica pero no participan en cadenas de valor bioeconómicas formales. Las comunidades afrodescendientes en 7 municipios de Caldas y zonas de Antioquia (Urabá, Bajo Cauca) tampoco tienen mecanismos de vinculación equitativa a negocios verdes. La Misión Nacional de Bioeconomía 2020 no incorporó intereses de comunidades locales e indígenas (Grilli et al. 2024). No existe un protocolo de Acceso y Distribución de Beneficios (ABS) articulado con el Protocolo de Nagoya.", "Recomendaciones": "• Desarrollar protocolos bioculturales y de Consentimiento Previo Libre e Informado (CPLI) para el uso del conocimiento ancestral Embera en bioproductos.
+• Crear mecanismos de participación accionaria o cogestión comunitaria en emprendimientos bioeconómicos para comunidades indígenas y afrodescendientes.
+• Articular la propuesta del Paisaje Ancestral Vivo Embera con el Ministerio de Cultura y el Comité de Gestión del PCC.", "Acciones Corto plazo (1-3 a.)": "• Mapeo etnobotánico y de ecosaberes participativo con comunidades Embera de Caldas.
+• Elaboración y adopción de protocolos CPLI departamentales basados en el estándar UEBT.
+• Diagnóstico de comunidades afrodescendientes con potencial de integración en cadenas NV.", "Acciones Mediano plazo (4-6 a.)": "• Desarrollo de 3-5 bioproductos co-creados con comunidades Embera con distribución equitativa de beneficios.
+• Certificaciones UEBT/Ecocert para los primeros emprendimientos biculturales de la región.
+• Diseño de la propuesta académica y política para el Paisaje Ancestral Vivo Embera Caldense.", "Acciones Largo plazo (+7 a.)": "• Presentación ante UNESCO de la candidatura del Paisaje Ancestral Vivo Embera Caldense.
+• Régimen jurídico departamental que reconozca los derechos bioeconómicos de las comunidades.
+• Red de empresas bioculturales indígenas y afrodescendientes posicionada en mercados internacionales.", "Zonas de priorización": "Occidente de Caldas (Riosucio, Supía, Belalcázar, Palestina, Anserma, Filadelfia); comunidades afrodescendientes de La Dorada, Marmato, Victoria (Caldas); Urabá y Bajo Cauca antioqueño.", "Actores clave": "CRIDEC, Gobernación de Caldas, Corpocaldas, MinInterior, ICANH, Ecoflora Cares, U. Manizales, SENA, Artesanías de Colombia, MinCultura, Comité de Gestión PCC.", "Fuentes / Referencias": "mision-sabios-caldas-2021 · biofabricas-caldas-2024 · decision-support-procedure-bioeconomy-2024 · estrategia-nacional-bioeconomia-2020"},
+  {"Dimensión": "Gobernanza y Social", "Cód.": "G4", "Meta": "Reducción de inseguridad alimentaria y pérdida/desperdicio de alimentos mediante sistemas regenerativos", "Temática": "Seguridad alimentaria y sistemas alimentarios regenerativos", "Bechas identificadas": "• Portafolio FOLU Quindío y FOLU Antioquia no presentados ante GEF/GCF", "Problemática a resolver": "El 67% de los hogares antioqueños está en inseguridad alimentaria (ISAH), 12.8 p.p. sobre el promedio nacional, con focos críticos en Bajo Cauca (87.6%) y Urabá (86%). En el Eje Cafetero, la pérdida y desperdicio de alimentos alcanza 1.65 millones de toneladas/año (17.1% del total nacional). Los costos médicos por mala alimentación en Antioquia superan 2 billones COP/año. La diversidad alimentaria nativa no está integrada en los programas de alimentación pública. Las Hojas de Ruta FOLU Quindío (2019) y FOLU Antioquia (2021) existen como documentos pero sus portafolios no han sido presentados ante GEF/GCF.", "Recomendaciones": "• Integrar las Hojas de Ruta FOLU como instrumentos vinculantes en los planes de desarrollo.
+• Diseñar programas de diversificación de la dieta basados en biodiversidad alimentaria nativa.
+• Construir infraestructura descentralizada de poscosecha para reducir pérdidas en origen.
+• Presentar el portafolio de proyectos FOLU ante GEF, GCF y el Fondo Colombia Sostenible.", "Acciones Corto plazo (1-3 a.)": "• Diagnóstico actualizado de pérdida y desperdicio por cadena (café, aguacate, cacao, cítricos, plátano).
+• Programa piloto de diversificación alimentaria con biodiversidad nativa en 20 municipios.
+• Formulación del portafolio de proyectos FOLU para presentar ante GEF FOLUR y GCF.", "Acciones Mediano plazo (4-6 a.)": "• Centros de transformación rural en municipios cafeteros para aprovechamiento de residuos.
+• Programa de alimentación escolar regionalizado basado en producción local diversificada.
+• Pago por Servicios de Provisión Agroecológica para sistemas que reducen pérdida/desperdicio.", "Acciones Largo plazo (+7 a.)": "• Sistema agroalimentario regional certificado como 'Eje Cafetero Regenerativo'.
+• Reducción de pérdida y desperdicio de alimentos a menos del 10% del total nacional (desde 17.1%).
+• Marca 'Alimentos de Biodiversidad Andina' para bioproductos alimentarios nativos.", "Zonas de priorización": "Bajo Cauca y Urabá antioqueño (mayor inseguridad alimentaria); municipios cafeteros de Quindío (Quimbaya, Calarcá, Montenegro); subregión occidente de Caldas.", "Actores clave": "Gobernaciones, Alcaldías municipales, ICBF, FAO Colombia, WRI, MinAgricultura, Coalición FOLU, E3 Ecología Economía Ética, Comités de Cafeteros, Slow Food Pijao, Fedeorgánicos, Asohofrucol, Uniquindío.", "Fuentes / Referencias": "folu-antioquia-2021 · folu-quindio-2019 · decision-support-procedure-bioeconomy-2024 · bioeconomy-report-four-regions-2021"},
+  {"Dimensión": "Económica", "Cód.": "E1", "Meta": "Biorrefinerías de residuos agroindustriales cafeteros, cacao, aguacate y frutales", "Temática": "Bioproductos, biorrefinerías y economía circular", "Bechas identificadas": "• Residuos de cacao (65% cacota), aguacate y café sin cadena de valor estructurada", "Problemática a resolver": "Los residuos de café (pulpa, mucílago, cisco), aguacate Hass (cáscara, semilla, tallo), cacao (65% del fruto es cacota), cítricos y plátano no se aprovechan sistemáticamente. El aguacate Hass en Quindío creció 418% (2013-2021) y el cacao 2.045% sin que se haya desarrollado una cadena de valor de subproductos. El informe Ferrini et al. 2021 identifica la Zona Cafetera como región con mayor potencial para convertir residuos agrícolas en bioenergía y bioplásticos, pero esta recomendación no tiene implementación.", "Recomendaciones": "• Impulsar un clúster regional de biorrefinerías de biomasa cafetera y frutícola anclado en Cenicafé, BIOS y las universidades del Eje Cafetero.
+• Diseñar encadenamientos café + aguacate + cacao para cosméticos, bioplásticos, alimentos funcionales y colorantes, usando el Portafolio BIO IN como referente.
+• Crear un fondo regional de escalamiento para micro y medianas empresas en biorrefinería.", "Acciones Corto plazo (1-3 a.)": "• Mapeo cuantificado de flujos de biomasa residual cafetera, cacaotera y de aguacate por municipio.
+• Identificación de ventanas de procesamiento, requerimientos de infraestructura y modelos de negocio.
+• Estudio de mercado de bioproductos derivados de residuos agroindustriales del Eje Cafetero.", "Acciones Mediano plazo (4-6 a.)": "• Instalación de plantas piloto de biorrefinerías en 4 municipios estratégicos (uno por departamento).
+• Articulación con Ecoflora Cares, Colorquímica y Enves Biomateriales para transferencia tecnológica.
+• Constitución del fondo regional de escalamiento (SGR CTeI + cooperación bilateral UK PACT/GIZ).", "Acciones Largo plazo (+7 a.)": "• Marca regional 'Biobased Cafetero' con denominación de origen para bioproductos del PCC.
+• Cero residuos agroindustriales sin valorización en los municipios cafeteros.
+• Al menos 20 empresas bio-based escaladas con base en residuos agroindustriales regionales.", "Zonas de priorización": "Chinchiná–Palestina (Caldas, planta de liofilización existente); Quimbaya–Calarcá (Quindío, mayor área aguacate/cacao); municipios cafeteros de Risaralda sur; Suroeste antioqueño (mayor VA bio: 25%).", "Actores clave": "Cenicafé, FEDECACAO, BIOS (plataforma 3BIO), Gobernaciones, Cámaras de Comercio, Ecoflora Cares, Levapan, Colorquímica, Enves Biomateriales, Innpulsa, U. Manizales, UTP, Uniquindío, SENA.", "Fuentes / Referencias": "folu-quindio-2019 · biofabricas-caldas-2024 · bioeconomy-report-four-regions-2021 · colombia-competitiva-recomendaciones-2026 · portafolio-bio-in-2024"},
+  {"Dimensión": "Económica", "Cód.": "E2", "Meta": "Escalamiento del tejido empresarial de bioproductos, negocios verdes y biotecnología en el Eje Cafetero", "Temática": "Vocaciones territoriales de bioeconomía · Negocios verdes y biotecnología · Financiamiento", "Bechas identificadas": "• Plan Departamental de Biotecnología Risaralda sin implementación efectiva
+• CIEBREG sin programa estructurado de transferencia tecnológica a PYMES", "Problemática a resolver": "El Eje Cafetero tiene posición marginal en el mapa biotecnológico nacional: el 77% de las 203 empresas biotech del país se concentra en Antioquia, Bogotá y Valle del Cauca (BIOINTROPIC, 2017). En Risaralda, el Plan Departamental de Biotecnología existe pero 'se queda en buenas intenciones' sin implementación efectiva (Ospina, 2019). En Caldas, el IDC de sostenibilidad ambiental ocupa el puesto 23/33. BancO2 está ausente en 5 de 14 municipios de Risaralda. No existe un catálogo regional de ingredientes naturales ni plataforma de conexión entre productores rurales y empresas bio.", "Recomendaciones": "• Activar el Plan Departamental de Biotecnología de Risaralda con metas e indicadores.
+• Usar el CIEBREG como plataforma de I+D con transferencia directa a PYMES.
+• Crear una convocatoria regional de aceleración bioeconómica articulada entre los 4 departamentos.
+• Ampliar BancO2 en los 5 municipios de Risaralda sin cobertura.
+• Crear un catálogo digital de ingredientes naturales y bioproductos del Eje Cafetero–Antioquia.", "Acciones Corto plazo (1-3 a.)": "• Convocatoria para mapeo y certificación de nuevas iniciativas NV en Risaralda y Caldas (meta: 300).
+• Comité técnico de biotecnología empresarial Eje Cafetero con CIEBREG, Parque Tecnológico y Ruta N.
+• Diseño del catálogo digital de bioproductos e ingredientes naturales regionales.
+• Identificación y vinculación de 3 empresas compensadoras por municipio sin BancO2 activo.", "Acciones Mediano plazo (4-6 a.)": "• Fondo de capital semilla regional bio-based (SGR CTeI) con convocatoria anual para emprendimientos bio.
+• Programa de mentoría entre empresas consolidadas y emprendedores del Eje Cafetero.
+• Compras públicas verdes: 5% del presupuesto de adquisiciones de entidades departamentales.", "Acciones Largo plazo (+7 a.)": "• Parque de Bioeconomía Eje Cafetero para incubación, escalamiento y exportación de bioproductos.
+• Eje Cafetero en el top-3 de regiones con mayor concentración de empresas biotech en Colombia.
+• BancO2 operativo en los 14 municipios de Risaralda y en los 27 de Caldas.", "Zonas de priorización": "Pereira (CIEBREG, UTP); Manizales (Parque Tecnológico, U. Manizales); Armenia (Cámara de Comercio, Uniquindío); Medellín (nodo ancla Ruta N).", "Actores clave": "CIEBREG, Parque Tecnológico de Caldas, UTP, Uniquindío, EAFIT, Innpulsa, Ruta N, Gobernaciones, Cámaras de Comercio, CARDER, Corpocaldas, Fundación Grupo Bancolombia, SENA, Asobancaria.", "Fuentes / Referencias": "tejido-empresarial-biotecnologia-risaralda-2019 · plan-accion-carder-risaralda-2024-2027 · ordenanza-952-politica-ctei-caldas-2023 · estrategia-bioeconomia-antioquia-2023 · vision-risaralda-2032 · portafolio-bio-in-2024"},
+  {"Dimensión": "Económica", "Cód.": "E3", "Meta": "Turismo de naturaleza planificado con límites de carga ecosistémica y denominaciones de origen", "Temática": "Turismo de naturaleza", "Bechas identificadas": "• Turismo en Quindío (8.3% PIB) sin planificación de capacidad de carga
+• Denominación de origen 'Quindío Regenerativo' propuesta pero no implementada", "Problemática a resolver": "En Antioquia, el potencial de turismo de naturaleza (15.199+ especies) enfrenta el riesgo de turismo no sostenible que degrada hábitats. En Quindío, el turismo aporta el 8.3% del PIB (3.° nacional) pero sin planificación de capacidad de carga ecosistémica; la FOLU 2019 advierte el peligro de sobrepaso. La denominación de origen 'Quindío Regenerativo y Competitivo' fue propuesta en FOLU 2019 pero no está implementada. El Geoparque Volcán Ruiz tiene candidatura aspirante a UNESCO sin plan de manejo de visitantes articulado con la bioeconomía.", "Recomendaciones": "• Desarrollar planes de manejo de visitantes con límites de carga para los principales destinos de naturaleza (PNN Los Nevados, Selva de Florencia, Geoparque Ruiz, zonas de aviturismo).
+• Diseñar una ruta bioturística integrada Eje Cafetero–Antioquia Suroeste.
+• Implementar la denominación de origen 'Quindío Regenerativo y Competitivo' como marca territorial.", "Acciones Corto plazo (1-3 a.)": "• Estudios de capacidad de carga en 5 destinos prioritarios (PNN Los Nevados, Selva de Florencia, Geoparque Volcán Ruiz, corredor aviturismo Risaralda-Caldas, Jardín Botánico del Quindío).
+• Diseño e implementación piloto de la ruta bioturística integrada con ≥10 operadores certificados.
+• Proceso de registro y protección legal de la denominación de origen 'Quindío Regenerativo'.", "Acciones Mediano plazo (4-6 a.)": "• Sello 'Destino Bioeconómico Eje Cafetero' para operadores turísticos certificados.
+• Programa de formación de 200 guías especializados en biodiversidad y bioeconomía.
+• Sistema de cobro y distribución de ingresos por servicios ecosistémicos en destinos de naturaleza.", "Acciones Largo plazo (+7 a.)": "• Posicionamiento internacional del Eje Cafetero como destino líder de turismo científico en América Latina.
+• Candidatura consolidada del Geoparque Volcán Ruiz ante la Red Mundial de Geoparques UNESCO.
+• Sistema de monitoreo del impacto del turismo en biodiversidad con indicadores al Observatorio Regional.", "Zonas de priorización": "PNN Los Nevados (nodo central); Selva de Florencia (Caldas); Geoparque Volcán Ruiz; Salento y Filandia (Quindío); corredor aviturismo Anserma-Belalcázar (Caldas); Jardín-Jericó (Antioquia Suroeste).", "Actores clave": "Parques Nacionales Naturales, CARDER, CRQ, Corpocaldas, CORANTIOQUIA, FONTUR, Cámaras de Comercio de Turismo, Gobernaciones, Jardín Botánico del Quindío, Sociedad Caldense de Ornitología, Audubon Society Colombia, ProColombia.", "Fuentes / Referencias": "folu-quindio-2019 · estrategia-bioeconomia-antioquia-2023 · plan-accion-carder-risaralda-2024-2027 · pdd-caldas-2024-2027 · decision-support-procedure-bioeconomy-2024"},
+  {"Dimensión": "Económica", "Cód.": "E4", "Meta": "Reconversión del sistema ganadero extensivo hacia silvopastoreo intensivo y agroforestería productiva", "Temática": "Producción sostenible y regenerativa", "Bechas identificadas": "• 38% territorio antioqueño en ganadería extensiva (vocación 2.8%) sin reconversión", "Problemática a resolver": "En Antioquia, el 38% del territorio se usa para ganadería pero solo el 2.8% tiene vocación pecuaria. Solo el 15.4% se usa para agricultura cuando el 30.7% tiene vocación. La productividad agropecuaria es 7× por debajo de la OCDE. En Quindío, el 53% del suelo tiene vocación forestal pero el 31% se usa para pastos (conflicto severo). La expansión del aguacate Hass por capitales internacionales genera desarraigo rural. En Caldas, el bosque estable descendió de 151.176 ha (2014) a 135.672 ha (2024) — pérdida de 15.504 ha vinculada a presión ganadera.", "Recomendaciones": "• Implementar un programa regional de reconversión ganadera a Sistemas Silvopastoriles Intensivos (SSPI) con incentivos diferenciados según tamaño de predio.
+• Desarrollar zonificación participativa del uso del suelo articulada con catastros multipropósito.
+• Crear regulación departamental para proteger la adquisición de tierras cafeteras frente a capitales externos (protección del PCC).", "Acciones Corto plazo (1-3 a.)": "• Línea base de conflicto de uso del suelo por municipio en los 4 departamentos.
+• Acuerdos piloto de reconversión con 200 predios ganaderos en zonas con mayor conflicto documentado.
+• Implementación piloto del catastro multipropósito en municipios cafeteros de Quindío.", "Acciones Mediano plazo (4-6 a.)": "• Fondo regional de PSA para predios reconvertidos a SSPI, articulado con mercados de carbono REDD+.
+• Articulación con FINAGRO y FAG para línea de crédito verde exclusiva para reconversión ganadera.
+• Reconversión verificada del 20% de predios con conflicto de uso severo.", "Acciones Largo plazo (+7 a.)": "• 50% de predios ganaderos con conflicto severo convertidos a modelos silvopastoriles o agroforestales.
+• Productividad agropecuaria de sistemas reconvertidos al nivel promedio OCDE.
+• Norma departamental de protección de la economía campesina frente a acaparamiento de tierras.", "Zonas de priorización": "Norte, Suroeste y Urabá antioqueño (mayor extensión conflicto ganadero); Génova y Salento (Quindío); municipios cafeteros de Caldas (Anserma, Riosucio, Belalcázar) y Risaralda (Mistrató, Pueblo Rico).", "Actores clave": "UPRA, DNP, Gobernaciones, UMATA municipales, Fedegan, Comités de Cafeteros, FINAGRO, CAR departamentales, MinAgricultura, Agrosavia, TNC, WWF, Ecopetrol (SBN).", "Fuentes / Referencias": "estrategia-bioeconomia-antioquia-2023 · folu-antioquia-2021 · folu-quindio-2019 · bioeconomy-report-four-regions-2021 · decision-support-procedure-bioeconomy-2024"},
+  {"Dimensión": "Medio Ambiente", "Cód.": "MA1", "Meta": "Detención de la deforestación en focos críticos y restauración ecológica a escala de corredor de paisaje", "Temática": "Restauración ecosistémica y conservación de bosques", "Bechas identificadas": "• No existe un programa de restauración ecológica de corredor andino integrado
+• Riesgos de destrucción preventiva, leakage y Jevons sin mecanismos de prevención", "Problemática a resolver": "En Antioquia: 33.412 ha perdidas en 2017-2018; 440.000 ha entre 2000-2017; focos activos en Nordeste y Bajo Cauca. En Caldas: 398 ha de bosque primario húmedo deforestadas 2018-2022 incluyendo 14 ha en zonas protegidas. Los glaciares del Nevado del Ruiz han perdido cobertura desde los años 50. No existe un programa de restauración ecológica integrado entre los cuatro departamentos a escala de corredor andino. Los riesgos de destrucción preventiva de hábitats y leakage (Ferrini et al. 2021) no tienen mecanismos de monitoreo ni prevención.", "Recomendaciones": "• Diseñar un Programa de Restauración Ecológica de Corredor Andino (PRECA) con criterios de conectividad funcional y servicios ecosistémicos.
+• Implementar sistemas de alerta temprana de deforestación con imágenes satelitales.
+• Diseñar mecanismos para prevenir destrucción preventiva de hábitats y leakage.", "Acciones Corto plazo (1-3 a.)": "• Mapa de alertas tempranas y focos activos de deforestación con actualización mensual.
+• Acuerdos de conservación con propietarios privados en zonas de amortiguación de áreas protegidas.
+• Diseño del PRECA con participación comunitaria en cada departamento.", "Acciones Mediano plazo (4-6 a.)": "• Programa de restauración ecológica activa en 50.000 ha del corredor andino regional.
+• Mecanismos de financiamiento REDD+ articulados con la estrategia de carbono de Antioquia.
+• Protocolos departamentales contra la destrucción preventiva de hábitats.", "Acciones Largo plazo (+7 a.)": "• Corredor biológico funcional Pacífico–Andes Centrales–Caribe con al menos 200.000 ha.
+• Indicadores de deforestación neta cero en los 4 departamentos al 2034.
+• Mantenimiento de los últimos glaciares del Ruiz como patrimonio hídrico estratégico nacional.", "Zonas de priorización": "Nordeste y Bajo Cauca antioqueño (focos principales); Occidente y Centro de Caldas; Subregión 3 Risaralda (Pueblo Rico, Mistrató, corredor hacia Chocó); zona de influencia PNN Los Nevados.", "Actores clave": "Parques Nacionales, CORANTIOQUIA, CORNARE, CARDER, CRQ, Corpocaldas, MinAmbiente, IDEAM, WWF, TNC, Instituto Humboldt, Ecopetrol (SBN), Gobernaciones, comunidades campesinas rurales.", "Fuentes / Referencias": "estrategia-bioeconomia-antioquia-2023 · pdd-caldas-2024-2027 · bioeconomy-report-four-regions-2021 · decision-support-procedure-bioeconomy-2024"},
+  {"Dimensión": "Medio Ambiente", "Cód.": "MA2", "Meta": "Ampliación y conectividad del sistema de áreas protegidas e integración de corredores biológicos", "Temática": "Biodiversidad y servicios ecosistémicos", "Bechas identificadas": "• SIDAP de los 4 departamentos no articulados en conectividad de paisaje", "Problemática a resolver": "Antioquia tiene solo el 10.1% del territorio en áreas protegidas frente al promedio nacional de 14.2% y la meta OCDE de 22.8%, siendo el primer departamento en número de especies amenazadas. Los sistemas de áreas protegidas departamentales (SIDAP Antioquia, SIDAP Risaralda con 22 áreas y 146.399 ha, SIDAP Quindío con 5 áreas) no están conectados en una estrategia de conectividad de paisaje mancomunada. En Quindío, el 53% del territorio con vocación forestal no ha desarrollado figuras de protección complementaria.", "Recomendaciones": "• Elaborar un Plan de Conectividad Ecológica Regional (PCER) que integre los SIDAP de los 4 departamentos con conectores de paisaje funcionales.
+• Promover figuras de protección complementaria (RNSC, Acuerdos de Conservación, ZMPA).
+• Vincular la ampliación de áreas protegidas a los servicios ecosistémicos que proveen (agua, polinización, control biológico).", "Acciones Corto plazo (1-3 a.)": "• Modelamiento de conectividad y brechas de continuidad del paisaje entre los 4 departamentos.
+• Identificación de 50.000 ha de propiedades privadas prioritarias para acuerdos de conservación.
+• Articulación de los 4 SIDAP en una mesa técnica regional de conectividad.", "Acciones Mediano plazo (4-6 a.)": "• Declaración de nuevas áreas protegidas en 5 sitios prioritarios identificados por el PCER.
+• Incorporación de 30.000 ha adicionales bajo Reservas Naturales de la Sociedad Civil.
+• Ampliación del SIDAP Risaralda hacia el corredor con el Chocó (Pueblo Rico y Mistrató).", "Acciones Largo plazo (+7 a.)": "• Sistema de áreas protegidas regional con 20% de cobertura en los 4 departamentos.
+• Corredor Pacífico–Los Nevados–Antioquia declarado y en gestión activa.
+• Esquemas de compensación por biodiversidad integrados en los proyectos de desarrollo regional.", "Zonas de priorización": "PNN Los Nevados (nodo central del corredor); Selva de Florencia (Caldas, humedales de montaña); corredor hacia Chocó (Risaralda occidente); páramos del Quindío; Paramillo (Antioquia).", "Actores clave": "Parques Nacionales, CARDER, CRQ, Corpocaldas, CORANTIOQUIA, CORNARE, MinAmbiente, TNC, WWF, IDEAM, Instituto Humboldt, Gobernaciones, propietarios privados rurales.", "Fuentes / Referencias": "plan-accion-carder-risaralda-2024-2027 · estrategia-bioeconomia-antioquia-2023 · pdd-caldas-2024-2027 · folu-quindio-2019"},
+  {"Dimensión": "Medio Ambiente", "Cód.": "MA3", "Meta": "Contabilidad del capital natural (CAN/SEEA-EA) y monitoreo bioeconómico regional", "Temática": "Gobernanza ambiental, métricas del capital natural e indicadores", "Bechas identificadas": "• Ningún plan de desarrollo departamental incluye indicadores de capital natural
+• Cuenta Satélite de Bioeconomía del DANE sin desglose subnacional", "Problemática a resolver": "No existe una cuenta de capital natural para ninguno de los 4 departamentos. El DANE diseña la Cuenta Satélite de Bioeconomía a nivel nacional pero sin desglose subnacional. Ningún plan de desarrollo departamental de la región incluye indicadores de capital natural ni de desempeño bioeconómico. Sin métricas es imposible detectar las tres consecuencias no intencionadas: destrucción preventiva de hábitats, leakage y Paradoja de Jevons (Ferrini et al. 2021). El Producto Ecosistémico Bruto (PEB) propuesto por el DNP no tiene implementación subnacional.", "Recomendaciones": "• Articular la Red de Cuentas Complementarias (CAN, Turner et al. 2019) con el SEEA-EA 2021 de Naciones Unidas para construir cuentas regionales de capital natural.
+• Integrar los 5 indicadores de bioeconomía de Alviar et al. (VA bio %, empleo bio %, emisiones GEI bio %, matrícula bio, GRI bio) en los sistemas de seguimiento de los PDD.
+• Crear un sistema de alertas para detección temprana de consecuencias no intencionadas.", "Acciones Corto plazo (1-3 a.)": "• Adopción del conjunto mínimo de indicadores bioeconómicos regionales como marco común de monitoreo.
+• Vinculación del Observatorio Regional con el DANE para piloto de desagregación subnacional.
+• Diseño del sistema de alertas de consecuencias no intencionadas con criterios de activación.", "Acciones Mediano plazo (4-6 a.)": "• Primeras cuentas piloto de capital natural para Antioquia y Risaralda.
+• Sistema de información geoespacial de capital natural con desagregación municipal.
+• Primeros informes anuales del estado de la bioeconomía regional articulados con ODS y Kunming-Montreal.", "Acciones Largo plazo (+7 a.)": "• Sistema integrado de contabilidad del capital natural con desagregación municipal en los 4 dptos.
+• Los 4 departamentos incluyen capítulo de capital natural con metas e indicadores cuantificados en sus PDD.
+• Eje Cafetero–Antioquia como nodo de referencia metodológica para contabilidad subnacional en Colombia.", "Zonas de priorización": "Secretarías de Ambiente y Planeación de los 4 departamentos; municipios con mayor capital natural para pilotos (Pueblo Rico, Salento, Jardín).", "Actores clave": "DANE, DNP, Instituto Humboldt, MinCiencias, Gobernaciones, CARDER, CRQ, Corpocaldas, CORANTIOQUIA, U. Manizales, UTP, Uniquindío, EAFIT, U. de Antioquia, Natural Capital Project–Stanford.", "Fuentes / Referencias": "bioeconomy-report-four-regions-2021 · decision-support-procedure-bioeconomy-2024 · measuring-bioeconomy-antioquia-2021 · estrategia-nacional-bioeconomia-2020"},
+  {"Dimensión": "Medio Ambiente", "Cód.": "MA4", "Meta": "Reducción de presiones sobre ecosistemas acuáticos, humedales y cuencas hídricas estratégicas", "Temática": "Servicios ecosistémicos hídricos y acuicultura sostenible", "Bechas identificadas": "• Sobreexplotación pesquera en cuencas andinas sin gestión integrada", "Problemática a resolver": "En Antioquia: 20.693 pescadores artesanales con sobreexplotación documentada en cuencas Magdalena, Cauca y San Juan. Especies en alerta: bagre rayado, bocachico, langosta espinosa. La regulación hídrica de Antioquia provee el 11.3% de la demanda nacional de agua pero los bosques con stock hídrico están en descenso. En Quindío: el conflicto de uso del suelo ganadero presiona cuencas que abastecen Armenia. El proyecto de acuicultura SGR del Quindío (2022-2026) no está articulado con estrategias de restauración de cuencas.", "Recomendaciones": "• Desarrollar programas de restauración de cuencas y humedales articulados con la producción acuícola.
+• Implementar cuotas de extracción y tallas mínimas con monitoreo participativo para especies amenazadas.
+• Articular BancO2 y PSA con la conservación de bosques riparios (23.334 ha en Risaralda).
+• Escalar el modelo de acuicultura sostenible del proyecto SGR de Quindío hacia Caldas y Antioquia.", "Acciones Corto plazo (1-3 a.)": "• Diagnóstico del estado ecológico de cuencas prioritarias: Cauca Alto, ríos del Quindío, humedales Bajo Cauca.
+• Acuerdos de conservación de bosques riparios con 500 propietarios ribereños en zonas de alta recarga.
+• Diseño del protocolo de escalamiento del modelo de acuicultura sostenible de Quindío.", "Acciones Mediano plazo (4-6 a.)": "• Programa regional de restauración de humedales y bosques de galería: 20.000 ha recuperadas.
+• Cuotas de pesca con participación de comunidades artesanales; diversificación hacia acuicultura.
+• Centros de acuicultura sostenible escalados en Caldas y Antioquia Suroeste.", "Acciones Largo plazo (+7 a.)": "• Cuencas estratégicas bajo planes de manejo integrado con cuentas de agua articuladas al SEEA-EA.
+• Cero vertimientos sin tratamiento en cuencas abastecedoras de agua urbana regional.
+• Poblaciones de bocachico, bagre rayado y otras especies amenazadas en recuperación verificada.", "Zonas de priorización": "Cuencas del río Cauca (Antioquia-Caldas-Quindío-Risaralda); cuencas del Magdalena (Caldas); humedales del Bajo Cauca; piscicultura continental del Quindío (Filandia, Circasia, Quimbaya); bosques de galería Risaralda.", "Actores clave": "CORPOURABÁ, CORANTIOQUIA, CORNARE, CARDER, CRQ, Corpocaldas, AUNAP, MinAmbiente, IGAC, EPM, Uniquindío, Asociación de Piscicultores de Filandia, comunidades pesqueras artesanales, Agrosavia.", "Fuentes / Referencias": "estrategia-bioeconomia-antioquia-2023 · folu-antioquia-2021 · acuicultura-quindio-2026 · plan-accion-carder-risaralda-2024-2027"}
+];
+
+// ═══════════════════════════════════════════
+// ACTORES DATA
+// ═══════════════════════════════════════════
+const ORGS_DATA = [
+  {id:0,org:"Universidad de Manizales",bio:"La organización desarrolla actividades integrales relacionadas con la bioeconomía a través de proyectos de investigación, desarrollo e innovación, así como procesos de apropiación social del conocimiento y consultorías especializadas. Su trabajo incluye el fortalecimiento de biofábricas, la gobernanza de la bioeconomía y la formulación e implementación de iniciativas orientadas al desarrollo sostenible. Además, impulsa programas académicos y de formación de capital humano, junto con la gestión, planeación y ejecución de programas vinculados a política pública en bioeconomía, enfocados en el fortalecimiento de las cadenas productivas y el desarrollo territorial.",keywords:["Desarrollo", "Biosistemas", "Gobernanza"],link:"https://www.linkedin.com/school/universidad-de-manizales/",biowiki:"https://brianamaya01.github.io/biolink_col/wiki/entities/Universidad-de-Antioquia",coord:[5.076187,-75.51304],foto:"universidad_de_manizales_logo.jpg"},
+  {id:1,org:"Ruta Cafetera Ecotours",bio:"Promueve la promoción de la biodiversidad Colombiana y propende por empoderar comunidades rurales emprendedoras que participen en procesos de regeneración de la naturaleza",keywords:["Ecoturismo"],link:"https://www.instagram.com/rutacafeteraecotours/?hl=es-la",biowiki:null,coord:[4.9363431073788115,-75.73858124765067],foto:"rutacafeteraecoours.jpg"},
+  {id:2,org:"Ecofinca la soledad",bio:"Actualmente la organización desarrolla proyectos de impacto social, ambiental y pedagógico enfocados en el rescate y fortalecimiento de la memoria ancestral quimbaya. Su trabajo también está orientado a la protección de la semilla, representada en niños y niñas polinizadores del Tawambi, promoviendo su participación activa en procesos comunitarios y de cuidado del territorio. A través de este proyecto, impulsado en articulación con el Ministerio de Ciencia, la organización fortalece alianzas con distintos actores del territorio para la producción de plantas medicinales, bajo principios de agricultura regenerativa y permacultura, evitando prácticas asociadas al monocultivo y promoviendo modelos sostenibles y diversos de cultivo.",keywords:["Agroecologia", "Permacultura", "Agricultura regenerativa"],link:"https://www.instagram.com/ecofincalasoledad/",biowiki:null,coord:[4.9569865950191625,-75.52228657833876],foto:"ecofinca_soledad.jpg"},
+  {id:3,org:"Centro de Investigaciones en Medio Ambiente y Desarrollo (CIMAD) de la Universidad de Manizales",bio:"Desarrolla proyectos de investigación, apropiación social del conocimiento y consultorías sobre bioeconomía, biofábricas y gobernanza de la bioeconomía.",keywords:["Desarrollo Sostenible", "Medio Ambiente", "Gobernanza de la Bioeconomía"],link:"https://umanizales.edu.co/investigaciones-y-posgrados/centro-de-investigacion",biowiki:null,coord:[5.076187,-75.51304],foto:"universidad_de_manizales_logo.jpg"},
+  {id:4,org:"Bruma Cacao",bio:"Bruma Cacao ofrece productos de cacao colombiano de alta calidad provenientes de fincas y productores cuidadosamente seleccionados en distintas regiones del país. Su trabajo se enfoca en conectar a productores locales con mercados especializados mediante principios de comercio justo, promoviendo el valor del origen, la calidad y la trazabilidad del cacao colombiano.",keywords:["Cacao", "Comercio justo", "Cadena productiva"],link:"https://www.brumacacao.de/co",biowiki:null,coord:null,foto:"bruma-cacao.png"},
+  {id:5,org:"Universidad de Antioquía",bio:"La organización desarrolla actividades de investigación básica y aplicada orientadas a la generación de conocimiento y al desarrollo científico y tecnológico. Su labor integra procesos de investigación y desarrollo, innovación y formación de capital humano, promoviendo la creación y transferencia de conocimiento en distintas áreas. Asimismo, participa en procesos académicos y de formación avanzada, incluyendo el acompañamiento de estudiantes de posgrado y el fortalecimiento de capacidades en investigación, con énfasis en campos como alimentación y nutrición humana.",keywords:["Bioeconomía", "Investigación", "Innovación"],link:"https://www.linkedin.com/school/udea-/",biowiki:"https://brianamaya01.github.io/biolink_col/wiki/entities/Universidad-de-Antioquia",coord:[6.2635442,-75.560099],foto:"udea__logo (1).jpg"},
+  {id:6,org:"C Minds",bio:"Action tank que promueve la investigación, el desarrollo y el uso responsable de tecnología innovadora para impacto en América Latina. En C Minds creemos que todo el mundo, en todas partes, debería tener las mismas oportunidades de vivir una vida plena. Y queremos asegurarnos de que las nuevas tecnologías ayuden a conseguirlo",keywords:["Bioeconomía", "Financiamiento regenerativo", "Bioprosperidad"],link:"https://www.linkedin.com/company/c-minds/",biowiki:null,coord:null,foto:"c_minds_logo.jpg"},
+  {id:7,org:"Corpocaldas",bio:"La Corporación Autónoma Regional de Caldas (Corpocaldas) es la entidad encargada de la gestión, protección y control del medio ambiente y los recursos naturales renovables en el departamento de Caldas, promoviendo la conservación, el uso sostenible de los ecosistemas y la participación ciudadana para el desarrollo regional sostenible.",keywords:["Ambiental", "Bioeconomía", "Conservación"],link:null,biowiki:"https://brianamaya01.github.io/biolink_col/wiki/entities/Corpocaldas",coord:[5.066979767689393,-75.51824580346957],foto:"corpocaldas.png"},
+  {id:8,org:"Glamping Leon dormido",bio:"Es reconocido oficialmente como el hospedaje de este tipo a mayor altura en Colombia, ubicado entre los 3,800 y 4,000 metros sobre el nivel del mar. Se sitúa de manera estratégica en la vía que conecta a Manizales con Murillo, en el sector de La Tribuna, justo frente al majestuoso e imponente Volcán Nevado del Ruiz.",keywords:["Turismo"],link:"www.glampingleondormido.com/",biowiki:null,coord:[4.97946913524573,-75.3439440909004],foto:"leon_dormido.png"},
+  {id:9,org:"Alcaldía de Villamaria",bio:"Nuestra organización desarrolla iniciativas sociales, ambientales y comunitarias en el municipio de Villamaría, promoviendo el aprovechamiento sostenible de los recursos del territorio, el fortalecimiento de emprendimientos locales y la generación de espacios de educación y participación ciudadana orientados al desarrollo sostenible y la bioeconomía como herramienta de transformación social y económica.",keywords:["Turismo de Naturaleza", "Avisturismo", "Termales"],link:"www.alcaldiadevillamaria.com",biowiki:null,coord:[5.045436552988614,-75.51197293230574],foto:"alcaldia-villamaria.jpg"},
+  {id:10,org:"Hacienda el Bosque sas",bio:"Somo un lodge especializado en la creación de escenarios para realizar la actividad de observación y fotografía de aves, orquídeas, mamíferos y paisajes",keywords:["Turismo de naturaleza"],link:"https://www.instagram.com/haciendaelbosque/?hl=es",biowiki:null,coord:[5.025321500105218,-75.3697553003204],foto:"hacienda-bosque.jpg"}
+];
+
+const PERSONAS_DATA = [
+  {nombre:"Guillermo Restrepo",perfil:"Coordinador de Proyectos, Procesos de recuperación ambiental, energía sostenible y limpia, economía circular, aprovechamiento de recursos.",red:null,email:"innovatech.pereira@gmail.com",departamento:"Risaralda",cargo:"Coordinador de Proyectos",genero:"Masculino",org:"ISE.sas"},
+  {nombre:"Carlos Humberto Gonzalez Escobar",perfil:"Docente e Investigador del CIMAD -Centro de Investigación y Medio Ambiente- de la Universidad de Manizales",red:null,email:"consultor.carloshg@gmail.com",departamento:"Caldas",cargo:"Docente de la Maestría y Doctorado en Desarrollo Sostenible de la Universidad de Manizales",genero:"Masculino",org:"Universidad de Manizales"},
+  {nombre:"Abel Osvaldo Villa Rodriguez",perfil:"Profesional con más de 20 años de experiencia de trabajo en entornos multiculturales y multilingüe en México, Colombia, Alemania y Reino Unido. Experiencia en negocios y logística internacionales en el sector agrícola y manufactura de exportación. Habilidad para el análisis de la cadena de suministro y valor del sector orgánico en México, el Reino Unido y la Unión Europea. Conocimiento amplio sobre el mercado orgánico, modelos de negocio sustentables, y estrategias para la distribución de valor a lo largo de los actores que participan en la cadena, con especial énfasis en los productores. Creo firmemente en el poder de los mecanismos de mercado para crear relaciones comerciales sostenibles y duraderas.",red:"https://www.linkedin.com/in/abel-villa-phd/",email:"virao82@gmail.com",departamento:"Antioquia",cargo:"Senior consultant in Bioeconomy",genero:"Masculino",org:"Universidad de Manizales"},
+  {nombre:"Santiago Franco Jaramillo",perfil:"Biólogo con énfasis en bioeconomía de emprendimientos rurales y conservación del patrimonio natural",red:"https://www.instagram.com/rutacafeteraecotours/?hl=es-la",email:"rutacafeteraecotours@gmail.com",departamento:"Risaralda",cargo:"Emprendedor agroecoturístico y educador ambiental",genero:"Masculino",org:"Ruta Cafetera Ecotours"},
+  {nombre:"Daniel Valencia",perfil:"Soy un ingeniero agrónomo y campesino en formación, actualmente me encuentro desarrollando un proyecto de implementación de una planta de extracción de aceites esenciales junto a la universidad nacional, gracias a una convocatoria que nos ganamos con el ministerio de Ciencias. Adicional a ello estamos desarrollando estrategias de impacto social, ambiental y educacional en la región",red:null,email:"danielvalencia07@hotmail.com",departamento:"Caldas",cargo:"Ingeniero Agrónomo",genero:"Masculino",org:"Ecofinca la soledad"},
+  {nombre:"Juan Carlos Granobles Torres",perfil:"Ingeniero Agrónomo, Especialista en Gerencia Agraria, Magíster en Sistemas de Producción Agropecuaria, Estudiante de Doctorado en Desarrollo Sostenible (c), Docente - Investigador del Centro de Investigaciones en Medio Ambiente y Desarrollo Sostenible.",red:null,email:"jcgranobles@umanizales.edu.co",departamento:"Caldas",cargo:"Docente - Investigador",genero:"Masculino",org:"Centro de Investigaciones en Medio Ambiente y Desarrollo (CIMAD) de la Universidad de Manizales"},
+  {nombre:"Jorge W. Arboleda V.",perfil:"Ingeniero Agrónomo de la Universidad de Caldas, Doctor en Ciencias Básicas: Biología Molecular, Universidade de Brasilia, - Brasil y PosDoc de EMBRAPA – CENARGEN. Investigador Senior de Minciencias, Docente-Investigador de la Universidad de Antioquia (Colombia) y la Universidad de Manizales; posee más de 25 años de experiencia en investigación, actuando principalmente en el área de la Bioprospección, Biotecnología y Bioeconomía; principalmente en la identificación y caracterización de moléculas de interés biotecnológico en fuentes naturales, biotecnología microbiana, prospección de genes, control biológico, bioinformática, ciencia de datos y fitomedicina; mediante el uso de herramientas OMICAS. Participa de actividades de consultoría, asistencia técnica, planeación, elaboración y ejecución de proyectos de carácter científico, desarrollo e innovación que articulan los esfuerzos de los sectores académico, industrial y gubernamental orientados al desarrollo sostenible. Adicionalmente, tiene mas de 50 publicaciones científicas, patentes y premios nacionales e internacionales; ha dirigido y/o codirigido más de 80 trabajos de tesis a nivel de pregrado y posgrado. Finalmente, el Dr. Arboleda hace parte del equipo Médico y Científico de Laboratorios Herssen y presta servicios de consultoría en temas de investigación y desarrollo para empresas del sector salud, cosmético y agroindustrial.",red:"@jw.arboleda",email:"jwarboleda@gmail.com",departamento:"Caldas",cargo:"Docente - Investigador",genero:"Masculino",org:"Universidad de Manizales"},
+  {nombre:"Clemencia Amaya",perfil:"Docente en sostenibilidad, empresaria de productos derivados del Cacao",red:"www.linkedin.com/in/gloria-clemencia-amaya-castaño-b190a61a",email:"clemencia.amaya@brumacacao.de",departamento:"Caldas",cargo:"Docente e investigadora",genero:"Femenino",org:"Bruma Cacao"},
+  {nombre:"María Alejandra Flórez Restrepo",perfil:"Soy microbióloga industrial y ambiental y máster en ciencias farmacéuticas y alimentarias egresada de la Universidad de Antioquía. Actualmente soy estudiante del programa de doctorado en Biotecnología. Trabajo en el grupo de investigación Biopolimer dónde estudio la biotecnología fúngica, especialmente trabajo con hongos de la podredumbre blanca para la producción de enzimas, polisacáridos y biomasa",red:"www.linkedin.com/in/alejandra-f-restrepo",email:"mariaa.florez@udea.edu.co",departamento:"Antioquia",cargo:"Estudiante de doctorado",genero:"Femenino",org:"Universidad de Antioquía"},
+  {nombre:"Daniela Alejandra Artunduaga Adarmes",perfil:"Médica veterinaria con experiencia en manejo de animales de laboratorio y énfasis en investigación sobre medicina regenerativa y biocompatibilidad de materiales",red:null,email:"artunduagadaniela98@gmail.com",departamento:"Antioquia",cargo:"Estudiante de maestría",genero:"Femenino",org:"Universidad de Antioquía"},
+  {nombre:"Estefany De Jesús Silva Gutiérrez",perfil:"Biotecnóloga, estudiante del 4 semestre de la maestría en Biología.",red:null,email:"estefanysilvagutierrez@gmail.com",departamento:"Antioquia",cargo:"Investigadora",genero:"Femenino",org:"Universidad de Antioquía"},
+  {nombre:"Yuliana Cruz Vega",perfil:"Microbióloga con énfasis en microbiología industrial y ambiental, con experiencia en procesos de fermentación a escala piloto en la industria del alcohol a partir de caña de azúcar, enfocada en optimización nutricional y rendimiento de producción. Poseo interés investigativo en biotecnología, microbiología aplicada y compuestos antimicrobianos, incluyendo el estudio del efecto de aceites esenciales sobre enterobacterias. Me caracterizo por mi compromiso, capacidad analítica, orientación a la investigación y facilidad para el trabajo interdisciplinario, con interés en el desarrollo de proyectos en fermentación, microbiota y biotecnología aplicada. Actualmente cursó primer año de biotecnología en la universidad de Antioquia.",red:null,email:"yuliana.cruz@udea.edu.co",departamento:"Antioquia",cargo:"Estudiante",genero:"Femenino",org:"Universidad de Antioquía"},
+  {nombre:"Eduardo Gómez Restrepo",perfil:"Bioeconomy for the Common Good | Head of Innovation Studio Naturatech LAC @C Minds | Regenerative Bioeconomy & Biodiversity Data for Governance Expert | PhD in Biotechnology | Former WEF C4IR",red:"https://www.linkedin.com/in/eduardobiocolombia/",email:"eduardo@cminds.co",departamento:"Caldas",cargo:"Director ScaleUp Studio, NaturaTech LAC initiative",genero:"Masculino",org:"C Minds"},
+  {nombre:"Sonia Cortés Bedoya",perfil:"Bióloga, líder del programa Negocios Verdes Corpocaldas",red:"https://www.linkedin.com/in/sonia-cort%C3%A9s-bedoya-366b8b94/",email:"soniacortes@corpocaldas.gov.co",departamento:"Caldas",cargo:"Proesional especializada",genero:"Femenino",org:"Corpocaldas"},
+  {nombre:"German Gomez",perfil:"Administrador de Empresas",red:"https://www.linkedin.com/home?originalSubdomain=co",email:"leondormidoglamping@gmail.com",departamento:"Caldas",cargo:"Propietario",genero:"Masculino",org:"Glamping Leon dormido"},
+  {nombre:"Lina Hernández",perfil:"Administrador de negocios,Organizador de eventos pequeños y de gran escala, experto construcción de productos turísticos, de promoción y difusión",red:"Lina Hernández López",email:"Pmasmedios@gmail.com",departamento:"Caldas",cargo:"Aseaoe unidad de turismo alcaldia de Villamaria",genero:"Femenino",org:"Alcaldía de Villamaria"},
+  {nombre:"Juan Martín Pérez Gómez",perfil:"Soy un administrador de empresas y negociador internacional, con estudios en lengua inglesa y francesa , nivel b2 y c1, con experiencia de 7 años en el sector turístico de naturaleza",red:"instagram y facebook: hacienda el bosque",email:"haciendaelbosqueecoturismo@gmail.com",departamento:"Caldas",cargo:"gerente y representante legal",genero:"Masculino",org:"hacienda el bosque sas"}
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const SK = 'padb_ec_v3';
+let DATA = [];
+let reviewed = {}; // id -> bool
+let flt = { dim:null, tem:null, q:'' };
+let view = 'g';
+let modal = { mode:'view', id:null, tab:0 };
+let confCb = null;
+
+// ── dim helpers ──
+const DIM_KEY = { 'Gobernanza y Social':'G', 'Económica':'E', 'Medio Ambiente':'M' };
+const DIM_LABEL = { G:'Gobernanza y Social', E:'Económica', M:'Medio Ambiente' };
+const DIM_ICON = { G:'🏛️', E:'📈', M:'🌿' };
+function dk(d){ return DIM_KEY[d]||'G'; }
+
+// ── bullet parsing ──
+function parseBullets(txt){
+  return (txt||'').split('\n').map(s=>s.replace(/^[•\-]\s*/,'')).map(s=>s.trim()).filter(Boolean);
+}
+function joinBullets(arr){
+  return arr.map(s=>s.trim()).filter(Boolean).map(s=>`• ${s}`).join('\n');
+}
+function parseSources(txt){
+  return (txt||'').split('·').map(s=>s.trim()).filter(Boolean);
+}
+function parseActors(txt){
+  return (txt||'').split(/[,;]/).map(s=>s.trim()).filter(Boolean);
+}
+
+// ── escape ──
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ═══════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════
+function load(){
+  try{
+    const s=localStorage.getItem(SK);
+    if(s){ const p=JSON.parse(s); DATA=p.data; reviewed=p.reviewed||{}; return; }
+  }catch(e){}
+  DATA=DEFAULT_DATA.map((d,i)=>({...d,_id:i}));
+  reviewed={};
+}
+function save(){
+  localStorage.setItem(SK,JSON.stringify({data:DATA,reviewed}));
+}
+function nextId(){ return DATA.length?Math.max(...DATA.map(d=>d._id||0))+1:0; }
+
+// ═══════════════════════════════════════════
+// FILTER & STATS
+// ═══════════════════════════════════════════
+function filtered(){
+  return DATA.filter(d=>{
+    if(flt.dim && d['Dimensión']!==flt.dim) return false;
+    if(flt.tem && d['Temática']!==flt.tem) return false;
+    if(flt.q){
+      const t=Object.values(d).join(' ').toLowerCase();
+      if(!t.includes(flt.q)) return false;
+    }
+    return true;
+  });
+}
+function toggleF(type,val,btn){
+  if(flt[type]===val){ flt[type]=null; btn.classList.remove('on'); }
+  else{
+    flt[type]=val;
+    document.querySelectorAll(`[data-${type}]`).forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+  render();
+}
+function resetF(type){
+  flt[type]=null;
+  document.querySelectorAll(`[data-${type}]`).forEach(b=>b.classList.remove('on'));
+  render();
+}
+
+// ═══════════════════════════════════════════
+// RENDER MAIN
+// ═══════════════════════════════════════════
+function buildTematicas(){
+  const tems=[...new Set(DATA.map(d=>d['Temática']).filter(Boolean))];
+  const c=document.getElementById('tem-pills');
+  c.innerHTML=tems.map(t=>`<button class="pill" data-tem="${esc(t)}" onclick="toggleF('tem','${t.replace(/'/g,"\\'")}',this)">
+    <span style="font-size:.75rem">🏷</span>${esc(t)}<span class="cnt">${DATA.filter(d=>d['Temática']===t).length}</span>
+  </button>`).join('');
+}
+function updateStats(){
+  const f=filtered();
+  document.getElementById('st-total').textContent=DATA.length;
+  document.getElementById('st-visible').textContent=f.length;
+  document.getElementById('st-rev').textContent=Object.values(reviewed).filter(Boolean).length;
+  document.getElementById('res-count').textContent=`Mostrando ${f.length} de ${DATA.length} acciones`;
+  ['G','E','M'].forEach(k=>{
+    const el=document.getElementById('c-'+k);
+    if(el) el.textContent=DATA.filter(d=>dk(d['Dimensión'])===k).length;
+  });
+}
+
+function render(){
+  const f=filtered();
+  updateStats();
+  const mc=document.getElementById('main-content');
+  if(!f.length){
+    mc.innerHTML=`<div class="empty"><div class="ei">🔎</div><p>No hay acciones con los filtros seleccionados.</p>
+    <button onclick="clearAll()" style="margin-top:12px;padding:7px 16px;border-radius:7px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:.82rem">Limpiar filtros</button></div>`;
+    return;
+  }
+  // group by dimension order
+  const DIMS=['Gobernanza y Social','Económica','Medio Ambiente'];
+  const sections=DIMS.map(dim=>{
+    const rows=f.filter(d=>d['Dimensión']===dim);
+    if(!rows.length) return '';
+    const k=dk(dim);
+    return `<div class="dim-section dim-${k}">
+      <div class="dim-heading">
+        <span class="dh-code">${DIM_ICON[k]} ${k === 'M' ? 'MA' : k}</span>
+        <span class="dh-name">${esc(dim)}</span>
+        <span class="dh-count">${rows.length} acción${rows.length>1?'es':''}</span>
+      </div>
+      <div class="cards-grid${view==='l'?' list-v':''}">${rows.map(d=>cardHTML(d,k)).join('')}</div>
+    </div>`;
+  }).join('');
+  mc.innerHTML=sections;
+}
+
+function cardHTML(d,k){
+  const id=d._id;
+  const isRev=!!reviewed[id];
+  const brechas=parseBullets(d['Bechas identificadas']);
+  const bPreview=brechas[0]||'';
+  const hasC=!!d['Acciones Corto plazo (1-3 a.)'];
+  const hasM=!!d['Acciones Mediano plazo (4-6 a.)'];
+  const hasL=!!d['Acciones Largo plazo (+7 a.)'];
+  return `<div class="card dim-${k}">
+    <div class="card-acts">
+      <button class="ca ed" title="Editar" onclick="event.stopPropagation();openEdit(${id})">✏️</button>
+      <button class="ca dl" title="Eliminar" onclick="event.stopPropagation();confirmDel(${id})">🗑️</button>
+    </div>
+    <div class="card-top" onclick="openView(${id})">
+      <div class="code-badge">${esc(d['Cód.'])}</div>
+      <div class="card-head-meta">
+        <span class="tem-tag">${esc(d['Temática'])}</span>
+        <div class="card-meta-title">${esc(d['Meta'])}</div>
+      </div>
+    </div>
+    <div class="card-body" onclick="openView(${id})">
+      <div class="brecha-preview">${bPreview?`▸ ${esc(bPreview)}`:''}</div>
+    </div>
+    <div class="card-footer">
+      <div class="tl-bar">
+        <div class="tl-seg${hasC?' c':''}"></div>
+        <div class="tl-seg${hasM?' m':''}"></div>
+        <div class="tl-seg${hasL?' l':''}"></div>
+      </div>
+      <button class="rev-btn${isRev?' done':''}" onclick="event.stopPropagation();toggleRev(${id})">${isRev?'✓ Revisada':'Marcar revisada'}</button>
+      <span class="card-hint">Ver →</span>
+    </div>
+  </div>`;
+}
+
+function toggleRev(id){
+  reviewed[id]=!reviewed[id];
+  save();
+  render();
+}
+function setView(v){
+  view=v;
+  document.getElementById('vb-g').classList.toggle('on',v==='g');
+  document.getElementById('vb-l').classList.toggle('on',v==='l');
+  render();
+}
+function clearAll(){
+  flt={dim:null,tem:null,q:''};
+  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));
+  document.getElementById('search').value='';
+  render();
+}
+
+// ═══════════════════════════════════════════
+// MODAL — VIEW
+// ═══════════════════════════════════════════
+const VIEW_TABS=['🔍 Diagnóstico','✅ Recomendaciones','📅 Plan de acción','📍 Territorio','📚 Fuentes'];
+
+function openView(id){
+  const d=DATA.find(x=>x._id===id);
+  if(!d) return;
+  modal={mode:'view',id,tab:0};
+  renderModalHead(d);
+  renderModalTabs(VIEW_TABS);
+  renderViewTab(d,0);
+  renderViewFoot(id);
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderModalHead(d){
+  const k=dk(d['Dimensión']);
+  document.getElementById('mh-code').className=`mh-code dim-${k}`;
+  document.getElementById('mh-code').textContent=d['Cód.'];
+  const dimColors={G:'background:var(--g-pale);color:var(--g)',E:'background:var(--e-pale);color:var(--e)',M:'background:var(--m-pale);color:var(--m)'};
+  document.getElementById('mh-tags').innerHTML=`
+    <span class="mh-dim-tag" style="${dimColors[k]}">${DIM_ICON[k]} ${esc(d['Dimensión'])}</span>
+    <span class="mh-tem-tag">${esc(d['Temática'])}</span>`;
+  document.getElementById('mh-title').textContent=d['Meta'];
+}
+
+function renderModalTabs(tabs){
+  document.getElementById('modal-tabs').innerHTML=tabs.map((t,i)=>
+    `<button class="mtab${i===modal.tab?' on':''}" onclick="switchTab(${i})">${t}</button>`
+  ).join('');
+}
+
+function switchTab(i){
+  modal.tab=i;
+  const d=DATA.find(x=>x._id===modal.id);
+  if(!d) return;
+  document.querySelectorAll('.mtab').forEach((b,j)=>b.classList.toggle('on',j===i));
+  if(modal.mode==='view') renderViewTab(d,i);
+  else renderEditTab(d,i);
+}
+
+function bulletsHTML(txt){
+  const items=parseBullets(txt);
+  if(!items.length) return '<em style="opacity:.4;font-size:.85rem">Sin información</em>';
+  return `<ul class="bullet-list">${items.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+}
+
+function renderViewTab(d,tab){
+  const body=document.getElementById('modal-body');
+  if(tab===0){
+    body.innerHTML=`
+      <div class="vc-section">
+        <h4>⚠️ Brechas identificadas</h4>
+        ${bulletsHTML(d['Bechas identificadas'])}
+      </div>
+      <div class="vc-section">
+        <h4>🔴 Problemática a resolver</h4>
+        <div class="problem-box">${esc(d['Problemática a resolver'])}</div>
+      </div>`;
+  } else if(tab===1){
+    body.innerHTML=`
+      <div class="vc-section">
+        <h4>✅ Recomendaciones</h4>
+        ${bulletsHTML(d['Recomendaciones'])}
+      </div>`;
+  } else if(tab===2){
+    body.innerHTML=`
+      <div class="plan-cols">
+        <div class="plan-col c">
+          <div class="plan-col-label">🌱 Corto plazo (1–3 a.)</div>
+          ${bulletsHTML(d['Acciones Corto plazo (1-3 a.)'])}
+        </div>
+        <div class="plan-col m">
+          <div class="plan-col-label">🌿 Mediano plazo (4–6 a.)</div>
+          ${bulletsHTML(d['Acciones Mediano plazo (4-6 a.)'])}
+        </div>
+        <div class="plan-col l">
+          <div class="plan-col-label">🌳 Largo plazo (+7 a.)</div>
+          ${bulletsHTML(d['Acciones Largo plazo (+7 a.)'])}
+        </div>
+      </div>`;
+  } else if(tab===3){
+    const actors=parseActors(d['Actores clave']);
+    body.innerHTML=`
+      <div class="vc-section">
+        <h4>📍 Zonas de priorización</h4>
+        <div class="zones-box">${esc(d['Zonas de priorización'])}</div>
+      </div>
+      <div class="vc-section">
+        <h4>👥 Actores clave</h4>
+        <div class="actor-chips">${actors.map(a=>`<span class="actor-chip">${esc(a)}</span>`).join('')}</div>
+      </div>`;
+  } else if(tab===4){
+    const srcs=parseSources(d['Fuentes / Referencias']);
+    body.innerHTML=`
+      <div class="vc-section">
+        <h4>📚 Fuentes y referencias</h4>
+        <div class="source-chips">${srcs.map(s=>`<span class="source-chip">${esc(s)}</span>`).join('')}</div>
+      </div>`;
+  }
+}
+
+function renderViewFoot(id){
+  document.getElementById('modal-foot').innerHTML=`
+    <button class="btn btn-s" onclick="closeModal()">Cerrar</button>
+    <button class="btn btn-e" onclick="openEdit(${id})">✏️ Editar</button>`;
+}
+
+// ═══════════════════════════════════════════
+// MODAL — EDIT / ADD
+// ═══════════════════════════════════════════
+const EDIT_TABS=['🔍 Diagnóstico','✅ Recomendaciones','📅 Plan de acción','📍 Territorio','📚 Fuentes'];
+
+function openEdit(id){
+  const d=DATA.find(x=>x._id===id);
+  if(!d) return;
+  modal={mode:'edit',id,tab:0};
+  renderModalHead(d);
+  renderModalTabs(EDIT_TABS);
+  renderEditTab(d,0);
+  renderEditFoot(id);
+  if(!document.getElementById('modal').classList.contains('open')){
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+}
+
+function openAdd(){
+  const blank={_id:-1,'Dimensión':'Gobernanza y Social','Cód.':'','Meta':'','Temática':'','Bechas identificadas':'','Problemática a resolver':'','Recomendaciones':'','Acciones Corto plazo (1-3 a.)':'','Acciones Mediano plazo (4-6 a.)':'','Acciones Largo plazo (+7 a.)':'','Zonas de priorización':'','Actores clave':'','Fuentes / Referencias':''};
+  modal={mode:'add',id:-1,tab:0};
+  // temp store for add
+  window._addDraft=blank;
+  renderModalHead(blank);
+  document.getElementById('mh-code').textContent='NEW';
+  document.getElementById('mh-title').textContent='Nueva acción';
+  renderModalTabs(EDIT_TABS);
+  renderEditTab(blank,0);
+  document.getElementById('modal-foot').innerHTML=`
+    <button class="btn btn-s" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-p" onclick="saveAction()">＋ Añadir acción</button>`;
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderEditFoot(id){
+  document.getElementById('modal-foot').innerHTML=`
+    <button class="btn btn-s" onclick="switchToView(${id})">Cancelar</button>
+    <button class="btn btn-d" onclick="confirmDel(${id},true)">🗑️ Eliminar</button>
+    <button class="btn btn-p" onclick="saveAction()">💾 Guardar cambios</button>`;
+}
+
+// list editor builder
+function leHTML(cid,items,compact=false){
+  const itemsHTML=items.length?items:[''];
+  return `<div class="le" id="${cid}">
+    ${itemsHTML.map(item=>`<div class="le-item">
+      <textarea class="${compact?'sm':''}" rows="${compact?1:2}">${esc(item)}</textarea>
+      <button class="le-x" onclick="leRemove(this)" title="Eliminar">×</button>
+    </div>`).join('')}
+    <button class="le-add" onclick="leAdd('${cid}',${compact})">＋ Añadir</button>
+  </div>`;
+}
+function leAdd(cid,compact){
+  const c=document.getElementById(cid);
+  const btn=c.querySelector('.le-add');
+  const div=document.createElement('div'); div.className='le-item';
+  div.innerHTML=`<textarea class="${compact?'sm':''}" rows="${compact?1:2}"></textarea><button class="le-x" onclick="leRemove(this)">×</button>`;
+  c.insertBefore(div,btn); div.querySelector('textarea').focus();
+}
+function leRemove(btn){
+  const item=btn.closest('.le-item');
+  const cont=item.parentElement;
+  if(cont.querySelectorAll('.le-item').length<=1){ item.querySelector('textarea').value=''; return; }
+  item.remove();
+}
+function leVals(cid){
+  return [...document.getElementById(cid).querySelectorAll('.le-item textarea')].map(t=>t.value.trim()).filter(Boolean);
+}
+
+function renderEditTab(d,tab){
+  const body=document.getElementById('modal-body');
+  const v=f=>esc(d[f]||'');
+  const DIMS=['Gobernanza y Social','Económica','Medio Ambiente'];
+  const tems=[...new Set(DATA.map(x=>x['Temática']).filter(Boolean))];
+  if(tab===0){
+    body.innerHTML=`<div class="edit-form">
+      <div class="ef-row">
+        <div class="fg"><label>Dimensión *</label>
+          <select id="ef-dim">${DIMS.map(x=>`<option${x===d['Dimensión']?' selected':''}>${esc(x)}</option>`).join('')}</select>
+        </div>
+        <div class="fg"><label>Código</label><input id="ef-cod" value="${v('Cód.')}" placeholder="G1, E1, MA1…"></div>
+        <div class="fg"><label>Temática</label>
+          <input id="ef-tem" value="${v('Temática')}" list="tem-dl" placeholder="Temática del área">
+          <datalist id="tem-dl">${tems.map(t=>`<option value="${esc(t)}">`).join('')}</datalist>
+        </div>
+      </div>
+      <div class="fg"><label>Meta (objetivo) *</label><textarea id="ef-meta" rows="2">${v('Meta')}</textarea></div>
+      <div class="fg"><label>Brechas identificadas</label>${leHTML('le-brechas',parseBullets(d['Bechas identificadas']))}</div>
+      <div class="fg"><label>Problemática a resolver</label><textarea id="ef-prob" rows="4">${v('Problemática a resolver')}</textarea></div>
+    </div>`;
+  } else if(tab===1){
+    body.innerHTML=`<div class="edit-form">
+      <div class="fg"><label>Recomendaciones</label>${leHTML('le-recs',parseBullets(d['Recomendaciones']))}</div>
+    </div>`;
+  } else if(tab===2){
+    body.innerHTML=`<div class="tl-edit-grid">
+      <div class="tl-edit-col c"><div class="tel">🌱 Corto (1–3 a.)</div>${leHTML('le-cp',parseBullets(d['Acciones Corto plazo (1-3 a.)']))}</div>
+      <div class="tl-edit-col m"><div class="tel">🌿 Mediano (4–6 a.)</div>${leHTML('le-mp',parseBullets(d['Acciones Mediano plazo (4-6 a.)']))}</div>
+      <div class="tl-edit-col l"><div class="tel">🌳 Largo (+7 a.)</div>${leHTML('le-lp',parseBullets(d['Acciones Largo plazo (+7 a.)']))}</div>
+    </div>`;
+  } else if(tab===3){
+    body.innerHTML=`<div class="edit-form">
+      <div class="fg"><label>Zonas de priorización</label><textarea id="ef-zonas" rows="2">${v('Zonas de priorización')}</textarea></div>
+      <div class="fg"><label>Actores clave <span style="font-weight:400;opacity:.6">(uno por línea o separados por coma)</span></label>${leHTML('le-actors',parseActors(d['Actores clave']),true)}</div>
+    </div>`;
+  } else if(tab===4){
+    body.innerHTML=`<div class="edit-form">
+      <div class="fg"><label>Fuentes / Referencias <span style="font-weight:400;opacity:.6">(una por línea)</span></label>${leHTML('le-src',parseSources(d['Fuentes / Referencias']),true)}</div>
+    </div>`;
+  }
+}
+
+// collect all form values across tabs by reading from DOM + memory
+// We store partial edits in a draft object as user navigates tabs
+let draft={};
+
+function switchTab(i){
+  // save current tab data into draft
+  collectTabIntoDraft(modal.tab);
+  modal.tab=i;
+  document.querySelectorAll('.mtab').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const d=modal.mode==='view'? DATA.find(x=>x._id===modal.id) : mergedDraft();
+  if(modal.mode==='view') renderViewTab(d,i);
+  else renderEditTab(d,i);
+}
+
+function collectTabIntoDraft(tab){
+  if(modal.mode==='view') return;
+  const d=draft;
+  const get=id=>{ const el=document.getElementById(id); return el?el.value.trim():''; };
+  if(tab===0){
+    d['Dimensión']=get('ef-dim')||d['Dimensión'];
+    d['Cód.']=get('ef-cod');
+    d['Temática']=get('ef-tem');
+    d['Meta']=get('ef-meta');
+    const bEl=document.getElementById('le-brechas');
+    if(bEl) d['Bechas identificadas']=joinBullets(leVals('le-brechas'));
+    d['Problemática a resolver']=get('ef-prob');
+  } else if(tab===1){
+    const rEl=document.getElementById('le-recs');
+    if(rEl) d['Recomendaciones']=joinBullets(leVals('le-recs'));
+  } else if(tab===2){
+    if(document.getElementById('le-cp')) d['Acciones Corto plazo (1-3 a.)']=joinBullets(leVals('le-cp'));
+    if(document.getElementById('le-mp')) d['Acciones Mediano plazo (4-6 a.)']=joinBullets(leVals('le-mp'));
+    if(document.getElementById('le-lp')) d['Acciones Largo plazo (+7 a.)']=joinBullets(leVals('le-lp'));
+  } else if(tab===3){
+    d['Zonas de priorización']=get('ef-zonas');
+    const aEl=document.getElementById('le-actors');
+    if(aEl) d['Actores clave']=leVals('le-actors').join(', ');
+  } else if(tab===4){
+    const sEl=document.getElementById('le-src');
+    if(sEl) d['Fuentes / Referencias']=leVals('le-src').join(' · ');
+  }
+}
+
+function mergedDraft(){
+  const base=modal.id>=0 ? (DATA.find(x=>x._id===modal.id)||{}) : (window._addDraft||{});
+  return {...base,...draft};
+}
+
+function saveAction(){
+  collectTabIntoDraft(modal.tab);
+  const merged=mergedDraft();
+  if(!merged['Dimensión']||!merged['Meta']){
+    showToast('⚠️ Dimensión y Meta son obligatorios'); return;
+  }
+  if(modal.mode==='edit'){
+    const idx=DATA.findIndex(d=>d._id===modal.id);
+    if(idx>=0) DATA[idx]={...DATA[idx],...merged,_id:modal.id};
+  } else {
+    DATA.push({...merged,_id:nextId()});
+  }
+  save(); buildTematicas(); render(); closeModal();
+  showToast(modal.mode==='edit'?'✅ Acción guardada':'✅ Acción añadida');
+}
+
+function switchToView(id){
+  draft={};
+  openView(id);
+}
+
+// ═══════════════════════════════════════════
+// DELETE
+// ═══════════════════════════════════════════
+function confirmDel(id,fromModal=false){
+  const d=DATA.find(x=>x._id===id);
+  if(!d) return;
+  showConfirm('¿Eliminar esta acción?',`"${(d['Meta']||'').substring(0,70)}…" se eliminará permanentemente.`,()=>{
+    DATA=DATA.filter(x=>x._id!==id);
+    delete reviewed[id];
+    save(); buildTematicas(); render();
+    if(fromModal) closeModal();
+    showToast('🗑️ Acción eliminada');
+  });
+}
+
+// ═══════════════════════════════════════════
+// MODAL UTILS
+// ═══════════════════════════════════════════
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+  modal={mode:'view',id:null,tab:0};
+  draft={};
+}
+function overlayClick(e,id){
+  if(e.target===document.getElementById(id)){
+    if(id==='modal') closeModal();
+    else if(id==='bw-panel') closeBW();
+  }
+}
+
+// ═══════════════════════════════════════════
+// CONFIRM
+// ═══════════════════════════════════════════
+function showConfirm(t,m,cb){
+  document.getElementById('conf-t').textContent=t;
+  document.getElementById('conf-m').textContent=m;
+  confCb=cb;
+  document.getElementById('conf').classList.add('open');
+}
+function confCancel(){ document.getElementById('conf').classList.remove('open'); confCb=null; }
+document.getElementById('conf-ok').onclick=()=>{ document.getElementById('conf').classList.remove('open'); if(confCb){confCb();confCb=null;} };
+
+// ═══════════════════════════════════════════
+// EXPORT / RESET
+// ═══════════════════════════════════════════
+function exportJSON(){
+  const blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='padb_eje_cafetero.json'; a.click();
+  showToast('📥 JSON exportado');
+}
+function confirmReset(){
+  showConfirm('¿Restaurar datos originales?','Se perderán todos los cambios. Esta acción no se puede deshacer.',()=>{
+    DATA=DEFAULT_DATA.map((d,i)=>({...d,_id:i})); reviewed={};
+    save(); buildTematicas(); render();
+    showToast('↩ Datos restaurados');
+  });
+}
+
+// ═══════════════════════════════════════════
+// SECTION SWITCHING
+// ═══════════════════════════════════════════
+let currentSection = 'plan';
+
+function switchSection(sec){
+  currentSection = sec;
+  document.getElementById('plan-section').style.display = sec==='plan' ? '' : 'none';
+  document.getElementById('actores-section').style.display = sec==='actores' ? '' : 'none';
+  document.getElementById('stab-plan').classList.toggle('active', sec==='plan');
+  document.getElementById('stab-actores').classList.toggle('active', sec==='actores');
+  if(sec==='actores' && !actoresBuilt){ buildActores(); actoresBuilt=true; }
+  if(sec==='actores' && avCurrent==='map' && !mapInitialized){ initMap(); }
+}
+
+// ═══════════════════════════════════════════
+// ACTORES — RENDER
+// ═══════════════════════════════════════════
+let actoresBuilt = false;
+let avCurrent = 'grid';
+let mapInitialized = false;
+let leafletMap = null;
+
+function imgPath(foto){ return 'raw/img/'+encodeURIComponent(foto); }
+
+function orgInitials(name){
+  return name.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
+
+function peopleForOrg(orgName){
+  return PERSONAS_DATA.filter(p=>p.org===orgName||p.org.toLowerCase()===orgName.toLowerCase());
+}
+
+function buildActores(){
+  // stats
+  const withCoord = ORGS_DATA.filter(o=>o.coord).length;
+  document.getElementById('actores-stats').textContent =
+    `${ORGS_DATA.length} organizaciones · ${PERSONAS_DATA.length} participantes · ${withCoord} georeferenciadas`;
+  document.getElementById('pcount-label').textContent = ` — ${PERSONAS_DATA.length} personas`;
+
+  // org grid
+  const og = document.getElementById('orgs-grid');
+  og.innerHTML = ORGS_DATA.map(o=>{
+    const people = peopleForOrg(o.org);
+    const logoHtml = o.foto
+      ? `<img class="org-logo" src="${imgPath(o.foto)}" alt="${esc(o.org)}" onerror="this.outerHTML='<div class=\\'org-logo-ph\\'>${orgInitials(o.org)}</div>'">`
+      : `<div class="org-logo-ph">${orgInitials(o.org)}</div>`;
+    return `<div class="org-card" id="org-card-${o.id}" onclick="openOrgPopup(${o.id})">
+      <div class="org-card-top">
+        ${logoHtml}
+        <div class="org-info">
+          <div class="org-name">${esc(o.org)}</div>
+          <div class="org-kws">
+            ${o.keywords.map(k=>`<span class="org-kw">${esc(k)}</span>`).join('')}
+            ${o.coord ? '<span class="org-coord-dot">📍 Georef.</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="org-body">${esc(o.bio)}</div>
+      <div class="org-footer">
+        <span class="org-pcount">👥 ${people.length} participante${people.length!==1?'s':''}</span>
+        <span class="org-details-hint">Ver detalles →</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // people grid
+  const pg = document.getElementById('people-grid');
+  pg.innerHTML = PERSONAS_DATA.map(p=>{
+    const initials = p.nombre.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const isFem = p.genero==='Femenino';
+    const redLink = p.red && p.red.startsWith('http') ? `<a class="p-link" href="${esc(p.red)}" target="_blank">🔗</a>` : '';
+    return `<div class="person-card">
+      <div class="p-avatar${isFem?' f':''}">${initials}</div>
+      <div class="p-info">
+        <div class="p-name" title="${esc(p.nombre)}">${esc(p.nombre)}</div>
+        <div class="p-cargo">${esc(p.cargo)}</div>
+        <div class="p-badges">
+          <span class="p-dept">${esc(p.departamento)}</span>
+          <span class="p-org-tag" title="${esc(p.org)}">${esc(p.org)}</span>
+          ${redLink}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openOrgPopup(id){
+  const o = ORGS_DATA.find(x=>x.id===id);
+  if(!o) return;
+  // logo
+  const lw = document.getElementById('om-logo-wrap');
+  lw.innerHTML = o.foto
+    ? `<img class="org-modal-logo" src="${imgPath(o.foto)}" alt="${esc(o.org)}" onerror="this.outerHTML='<div class=\\'org-modal-logo-ph\\'>${orgInitials(o.org)}</div>'">`
+    : `<div class="org-modal-logo-ph">${orgInitials(o.org)}</div>`;
+  document.getElementById('om-name').textContent = o.org;
+  document.getElementById('om-kws').innerHTML =
+    o.keywords.map(k=>`<span class="org-kw">${esc(k)}</span>`).join('') +
+    (o.coord ? '<span class="org-coord-dot">📍 Georef.</span>' : '');
+  document.getElementById('om-links').innerHTML = [
+    o.link ? `<a class="org-modal-link" href="${esc(o.link)}" target="_blank">🔗 Sitio web</a>` : '',
+    o.biowiki ? `<a class="org-modal-link" href="${esc(o.biowiki)}" target="_blank">🌐 Biowiki</a>` : ''
+  ].filter(Boolean).join('');
+  document.getElementById('om-bio').textContent = o.bio;
+  const people = peopleForOrg(o.org);
+  const hd = document.getElementById('om-people-hd');
+  hd.textContent = people.length
+    ? `👥 ${people.length} participante${people.length!==1?'s':''} del taller`
+    : '👥 Sin participantes registrados en este taller';
+  document.getElementById('om-people').innerHTML = people.map(p=>{
+    const init = p.nombre.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const redLink = p.red && p.red.startsWith('http') ? `<a class="p-link" href="${esc(p.red)}" target="_blank">🔗</a>` : '';
+    return `<div class="org-modal-person">
+      <div class="p-avatar${p.genero==='Femenino'?' f':''}">${init}</div>
+      <div class="p-info">
+        <div class="p-name">${esc(p.nombre)}</div>
+        <div class="p-cargo">${esc(p.cargo)}</div>
+        <div class="p-badges">
+          <span class="p-dept">${esc(p.departamento)}</span>
+          ${p.email?`<span style="font-size:.65rem;color:var(--muted)">${esc(p.email)}</span>`:''}
+          ${redLink}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('org-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeOrgModal(e){
+  if(e && e.target!==document.getElementById('org-modal')) return;
+  document.getElementById('org-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function setAV(view){
+  avCurrent = view;
+  document.getElementById('avb-grid').classList.toggle('on', view==='grid');
+  document.getElementById('avb-map').classList.toggle('on', view==='map');
+  document.getElementById('av-grid-view').style.display = view==='grid' ? '' : 'none';
+  document.getElementById('av-map-view').style.display = view==='map' ? '' : 'none';
+  if(view==='map' && !mapInitialized){ initMap(); }
+  if(view==='map' && leafletMap){ setTimeout(()=>leafletMap.invalidateSize(),100); }
+}
+
+// ═══════════════════════════════════════════
+// MAP
+// ═══════════════════════════════════════════
+function initMap(){
+  if(mapInitialized) return;
+  mapInitialized = true;
+  const orgsWithCoord = ORGS_DATA.filter(o=>o.coord);
+  const center = orgsWithCoord.length ? orgsWithCoord[0].coord : [5.07,-75.51];
+  leafletMap = L.map('leaflet-map').setView(center, 9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom:18
+  }).addTo(leafletMap);
+
+  orgsWithCoord.forEach(o=>{
+    const people = peopleForOrg(o.org);
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="width:44px;height:44px;border-radius:50%;border:3px solid #15803d;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)">
+        ${o.foto ? `<img src="${imgPath(o.foto)}" style="width:100%;height:100%;object-fit:contain;padding:3px">` : `<span style="font-size:.85rem;font-weight:800;color:#0f172a">${orgInitials(o.org)}</span>`}
+      </div>`,
+      iconSize:[44,44],
+      iconAnchor:[22,22]
+    });
+    const popup = `<div class="lf-popup-inner">
+      ${o.foto ? `<img src="${imgPath(o.foto)}" alt="${esc(o.org)}">` : ''}
+      <div class="lf-popup-name">${esc(o.org)}</div>
+      <div class="lf-popup-kws">${o.keywords.map(k=>`<span>${esc(k)}</span>`).join('')}</div>
+      <div class="lf-popup-count">👥 ${people.length} participante${people.length!==1?'s':''}</div>
+      ${o.link ? `<div style="margin-top:7px"><a href="${esc(o.link)}" target="_blank" style="color:#4338ca;font-size:.75rem;font-weight:600">🔗 Sitio web</a></div>` : ''}
+    </div>`;
+    L.marker(o.coord,{icon}).addTo(leafletMap).bindPopup(popup,{maxWidth:240});
+  });
+
+  // legend list
+  const list = document.getElementById('map-org-list');
+  list.innerHTML = ORGS_DATA.map(o=>{
+    const hasCoord = !!o.coord;
+    return `<div class="map-org-item${hasCoord?'':' map-org-nocoord'}" onclick="${hasCoord?`flyToOrg(${o.id})`:''}">
+      <img src="${imgPath(o.foto)}" alt="${esc(o.org)}" onerror="this.style.display='none'">
+      <div class="map-org-name">${esc(o.org)}${hasCoord?' <span style="color:#15803d;font-size:.65rem">📍</span>':'<span style="font-size:.65rem;color:#94a3b8"> sin coord.</span>'}</div>
+    </div>`;
+  }).join('');
+}
+
+function flyToOrg(id){
+  const o = ORGS_DATA.find(x=>x.id===id);
+  if(o && o.coord && leafletMap){
+    leafletMap.flyTo(o.coord,13,{duration:1.2});
+  }
+}
+
+// ═══════════════════════════════════════════
+// PRESENTATION
+// ═══════════════════════════════════════════
+let presIdx = 0;
+let presPlaying = true;
+let presTimer = null;
+let presProgressTimer = null;
+let presProgressVal = 0;
+const PRES_DURATION = 60000;
+const PRES_TICK = 250;
+let presMap = null;
+let presMapMarker = null;
+
+function initPresMap(){
+  if(presMap) return;
+  presMap = L.map('pres-map',{zoomControl:false,attributionControl:false}).setView([5.07,-75.51],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© OpenStreetMap contributors', maxZoom:19
+  }).addTo(presMap);
+}
+
+function startPresentation(){
+  if(!actoresBuilt){ buildActores(); actoresBuilt=true; }
+  presIdx = 0;
+  presPlaying = true;
+  document.getElementById('pres-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  renderPresSlide();
+  startPresTimer();
+}
+
+function stopPresentation(){
+  clearPresTimers();
+  document.getElementById('pres-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  if(presMapMarker && presMap){ presMap.removeLayer(presMapMarker); presMapMarker=null; }
+}
+
+function renderPresSlide(){
+  const o = ORGS_DATA[presIdx];
+  const total = ORGS_DATA.length;
+  document.getElementById('pres-counter').textContent = `${presIdx+1} / ${total}`;
+
+  // logo
+  const lw = document.getElementById('pres-logo-wrap');
+  if(o.foto){
+    lw.className='pres-logo-wrap';
+    lw.innerHTML=`<img src="${imgPath(o.foto)}" alt="${esc(o.org)}" style="max-width:100%;max-height:100%;object-fit:contain">`;
+  } else {
+    lw.className='pres-logo-ph';
+    lw.innerHTML=orgInitials(o.org);
+  }
+
+  document.getElementById('pres-org-name').textContent = o.org;
+  document.getElementById('pres-bio').textContent = o.bio;
+
+  document.getElementById('pres-kws').innerHTML = o.keywords.map(k=>`<span class="pres-kw">${esc(k)}</span>`).join('');
+
+  const links = [
+    o.link ? `<a class="pres-ext-link" href="${esc(o.link)}" target="_blank">🔗 Web</a>` : '',
+    o.biowiki ? `<a class="pres-ext-link" href="${esc(o.biowiki)}" target="_blank">🌐 Biowiki</a>` : ''
+  ].filter(Boolean).join('');
+  document.getElementById('pres-links').innerHTML = links;
+
+  const people = peopleForOrg(o.org);
+  document.getElementById('pres-people-lbl').textContent =
+    people.length ? `👥 ${people.length} participante${people.length!==1?'s':''} del taller` : '';
+  if(people.length){
+    document.getElementById('pres-people-grid').innerHTML = people.map(p=>{
+      const init = p.nombre.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+      return `<div class="pres-person-card">
+        <div class="pres-av${p.genero==='Femenino'?' f':''}">${init}</div>
+        <div>
+          <div class="pres-pname">${esc(p.nombre)}</div>
+          <div class="pres-pcargo">${esc(p.cargo)}</div>
+          <div style="font-size:.65rem;color:rgba(159,211,199,.5);margin-top:3px">${esc(p.departamento)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    document.getElementById('pres-people-grid').innerHTML = `<div class="pres-no-people">Sin participantes registrados en este taller</div>`;
+  }
+
+  // map panel
+  const mapPanel = document.getElementById('pres-map-panel');
+  if(o.coord){
+    mapPanel.style.display = '';
+    document.getElementById('pres-map-coord').textContent = `📍 ${o.coord[0].toFixed(4)}, ${o.coord[1].toFixed(4)}`;
+    setTimeout(()=>{
+      initPresMap();
+      presMap.invalidateSize();
+      presMap.flyTo(o.coord, 13, {duration:1});
+      if(presMapMarker){ presMap.removeLayer(presMapMarker); }
+      const icon = L.divIcon({
+        className:'',
+        html:`<div style="width:48px;height:48px;border-radius:50%;border:3px solid #4ade80;overflow:hidden;background:#0f3d36;display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(74,222,128,.5)">
+          ${o.foto?`<img src="${imgPath(o.foto)}" style="width:100%;height:100%;object-fit:contain;padding:4px">`:`<span style="font-size:.75rem;font-weight:800;color:#9fd3c7">${orgInitials(o.org)}</span>`}
+        </div>`,
+        iconSize:[48,48],iconAnchor:[24,24]
+      });
+      presMapMarker = L.marker(o.coord,{icon}).addTo(presMap);
+    }, 120);
+  } else {
+    mapPanel.style.display = 'none';
+  }
+
+  // reset progress
+  presProgressVal = 0;
+  document.getElementById('pres-progress').style.width = '0%';
+}
+
+function startPresTimer(){
+  clearPresTimers();
+  if(!presPlaying) return;
+  presProgressVal = 0;
+  document.getElementById('pres-play-btn').textContent = '⏸ Pausar';
+  presProgressTimer = setInterval(()=>{
+    presProgressVal += PRES_TICK;
+    const pct = Math.min((presProgressVal/PRES_DURATION)*100,100);
+    document.getElementById('pres-progress').style.width = pct+'%';
+    if(presProgressVal>=PRES_DURATION){ presMove(1); }
+  }, PRES_TICK);
+}
+
+function clearPresTimers(){
+  clearInterval(presProgressTimer);
+  clearTimeout(presTimer);
+}
+
+function presMove(dir){
+  clearPresTimers();
+  presIdx = (presIdx + dir + ORGS_DATA.length) % ORGS_DATA.length;
+  renderPresSlide();
+  if(presPlaying) startPresTimer();
+}
+
+function presTogglePlay(){
+  presPlaying = !presPlaying;
+  document.getElementById('pres-play-btn').textContent = presPlaying ? '⏸ Pausar' : '▶ Reanudar';
+  if(presPlaying){ startPresTimer(); } else { clearPresTimers(); }
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+let toastT;
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg;
+  t.classList.add('show'); clearTimeout(toastT);
+  toastT=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════
+// BIOWIKI
+// ═══════════════════════════════════════════
+function openBW(){
+  document.getElementById('bw-frame').src='https://brianamaya01.github.io/biolink_col/';
+  document.getElementById('bw-panel').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeBW(){
+  document.getElementById('bw-panel').classList.remove('open');
+  document.getElementById('bw-frame').src='about:blank';
+  document.body.style.overflow='';
+}
+
+// ═══════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('pres-overlay').classList.contains('open')){
+    if(e.key==='Escape') stopPresentation();
+    else if(e.key==='ArrowRight') presMove(1);
+    else if(e.key==='ArrowLeft') presMove(-1);
+    else if(e.key===' '){ e.preventDefault(); presTogglePlay(); }
+    return;
+  }
+  if(e.key==='Escape'){
+    if(document.getElementById('conf').classList.contains('open')) confCancel();
+    else if(document.getElementById('org-modal').classList.contains('open')) closeOrgModal();
+    else if(document.getElementById('modal').classList.contains('open')) closeModal();
+    else if(document.getElementById('bw-panel').classList.contains('open')) closeBW();
+  }
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  load();
+  document.getElementById('search').addEventListener('input',e=>{
+    flt.q=e.target.value.toLowerCase().trim(); render();
+  });
+  buildTematicas();
+  render();
+  // pre-build actores so map works when switching
+  buildActores(); actoresBuilt=true;
+});
+</script>
+</body>
+</html>

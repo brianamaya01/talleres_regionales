@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales generados por el script
+raw/actores_data.json
+raw/data.json
+raw/data_new.json
+
+# Archivos comprimidos de trabajo
+raw/org.zip
