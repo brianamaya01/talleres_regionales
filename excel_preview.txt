@@ -1,0 +1,377 @@
+﻿Sheet: PADB_EJE_CAFETERO
+Rows: 31 Cols: 27
+
+=== HEADERS ===
+Col 1: DIMENSIÓN
+Col 2: ESCALA
+Col 3: ZONA
+Col 4: PROBLEMA
+Col 5: RECOMENDACIÓN
+Col 6: CORTO PLAZO (1–3 años)
+Col 7: MEDIANO PLAZO (4–6 años)
+Col 8: LARGO PLAZO (7+ años)
+Col 9: ZONAS DE PRIORIZACIÓN
+Col 10: ACTORES
+Col 11: FUENTES
+
+=== ALL DATA ===
+--- Row 2 ---
+  [DIMENSIÓN]: GOBERNANZA
+  [ESCALA]: Departamental
+  [ZONA]: Antioquia
+  [PROBLEMA]: La Hoja de Ruta de Bioeconomía 2023-2026 existe pero sus 6 indicadores tienen financiamiento insuficiente; la PPCV (Orde
+  [RECOMENDACIÓN]: Consolidar la implementación de la Hoja de Ruta de Bioeconomía 2023-2026 y anclarla al presupuesto departamental y munic
+  [CORTO PLAZO (1–3 años)]: Implementar los 6 indicadores de la Hoja de Ruta; lanzar fondo concursable y observatorio con marca "Bioeconomía Antioqu
+  [MEDIANO PLAZO (4–6 años)]: Desarrollar la Hoja de Ruta 2027-2031 con lecciones aprendidas; integrar bioeconomía en los Ordenamientos de Aplicación 
+  [LARGO PLAZO (7+ años)]: Institucionalizar la bioeconomía como eje estructural del desarrollo antioqueño con gobernanza multinivel consolidada (G
+  [ZONAS DE PRIORIZACIÓN]: Medellín (nodo rector PPCV), subregiones Suroeste (25% del VA bio departamental) y Norte (23% del VA bio)
+  [ACTORES]: Gobernación de Antioquia, Sec. Productividad y Competitividad, GGGI, CORNARE, CORANTIOQUIA, universidades
+  [FUENTES]: estrategia-bioeconomia-antioquia-2023, hoja-ruta-bioeconomia-antioquia-2023-2026, epcv-antioquia-gggi-2019, ppcv-antioqu
+--- Row 3 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Antioquia
+  [PROBLEMA]: 38% del territorio en ganadería extensiva con vocación de solo el 2,8%; conflicto de uso es el principal motor de defore
+  [RECOMENDACIÓN]: Implementar el POTA 2018 con incentivos de bioeconomía para reconvertir la ganadería extensiva en sistemas silvopastoril
+  [CORTO PLAZO (1–3 años)]: Caracterizar los 14 municipios con mayor potencial de reconversión bio; implementar pilotos de sistemas silvopastoriles 
+  [MEDIANO PLAZO (4–6 años)]: Escalar reconversión ganadera a sistemas silvopastoriles en el 20% del territorio con conflicto de uso; implementar ATER
+  [LARGO PLAZO (7+ años)]: Transformar el conflicto de uso del suelo de Antioquia; consolidar el departamento como modelo nacional de reconversión 
+  [ZONAS DE PRIORIZACIÓN]: Suroeste antioqueño (Jericó, Jardín, Andes), Oriente (CORNARE), Norte (Santa Rosa), Urabá (banano + diversificación)
+  [ACTORES]: CORNARE, CORANTIOQUIA, Gobernación, Agrosavia, MADR, FNC Antioquia, Fedegan, FINAGRO
+  [FUENTES]: measuring-bioeconomy-antioquia-2021, epcv-antioquia-gggi-2019, folu-antioquia-2021
+--- Row 4 ---
+  [DIMENSIÓN]: MEDIO AMBIENTE
+  [ESCALA]: Departamental
+  [ZONA]: Antioquia
+  [PROBLEMA]: 10.472 ha deforestadas en H1 2022 (IDEAM/WWF); 33.412 ha perdidas 2017-2018; solo 10,1% del territorio en áreas protegid
+  [RECOMENDACIÓN]: Articular el Pacto por los Bosques de Antioquia con la Estrategia de Bioeconomía para convertir la conservación forestal
+  [CORTO PLAZO (1–3 años)]: Fortalecer el Pacto por los Bosques con incentivos de bioeconomía (PSA, REDD+) en los 10 municipios con mayor tasa de de
+  [MEDIANO PLAZO (4–6 años)]: Ampliar áreas protegidas al 14,2% (promedio nacional); implementar REDD+ con trazabilidad en cuencas del Nechí y San Jua
+  [LARGO PLAZO (7+ años)]: Lograr deforestación neta cero en Antioquia; bosques conservados y restaurados integrados a mercados internacionales de 
+  [ZONAS DE PRIORIZACIÓN]: Nordeste antioqueño (Ituango, Briceño), Bajo Cauca (El Bagre, Tarazá, Zaragoza), Urabá, PNN Paramillo
+  [ACTORES]: CORANTIOQUIA, CORNARE, CORPOURABÁ, PNN, TNC, WWF, Fondo Acción, Pacto por los Bosques de Antioquia
+  [FUENTES]: folu-antioquia-2021, epcv-antioquia-gggi-2019, estrategia-bioeconomia-antioquia-2023
+--- Row 5 ---
+  [DIMENSIÓN]: SOCIAL
+  [ESCALA]: Departamental
+  [ZONA]: Antioquia
+  [PROBLEMA]: 96% de los estudiantes en programas bio-relacionados están en el AMVA mientras la biodiversidad y el capital natural est
+  [RECOMENDACIÓN]: Descentralizar la formación en bioeconomía y la transferencia tecnológica hacia las subregiones con mayor capital natura
+  [CORTO PLAZO (1–3 años)]: Crear programas de extensión universitaria en bioeconomía en subregiones Suroeste, Norte y Urabá; desarrollar currículas
+  [MEDIANO PLAZO (4–6 años)]: Implementar pregrados en ciencias bioeconómicas en sedes regionales de SENA y U. de Antioquia; establecer meta del 15% d
+  [LARGO PLAZO (7+ años)]: Consolidar capital humano rural en bioeconomía; lograr 30% de estudiantes en programas bio-relacionados fuera del AMVA; 
+  [ZONAS DE PRIORIZACIÓN]: Subregiones Suroeste, Norte, Urabá y Bajo Cauca (mayor biodiversidad y menores indicadores educativos)
+  [ACTORES]: U. de Antioquia, SENA regional, EAFIT, MADR, MinCiencias, FNC Antioquia, Gobernación
+  [FUENTES]: measuring-bioeconomy-antioquia-2021, estrategia-bioeconomia-antioquia-2023, folu-antioquia-2021
+--- Row 6 ---
+  [DIMENSIÓN]: SOCIAL
+  [ESCALA]: Departamental
+  [ZONA]: Antioquia
+  [PROBLEMA]: 67% de los hogares con inseguridad alimentaria (ISAH); Bajo Cauca (87,6%) y Urabá (86%) como subregiones más críticas —c
+  [RECOMENDACIÓN]: Articular la Estrategia de Bioeconomía de Antioquia con los 4 Ejes Estratégicos del FOLU Antioquia para combinar producc
+  [CORTO PLAZO (1–3 años)]: Implementar los ejes estratégicos del FOLU Antioquia en 3 municipios piloto con mayor ISAH; vincular con mercados locale
+  [MEDIANO PLAZO (4–6 años)]: Escalar el modelo FOLU a 10 municipios; articular sistemas agroalimentarios locales con cadenas de valor de bioeconomía;
+  [LARGO PLAZO (7+ años)]: Reducir ISAH en Antioquia del 67% al 45%; establecer la bioeconomía como motor de producción alimentaria sostenible; int
+  [ZONAS DE PRIORIZACIÓN]: Bajo Cauca (Caucasia, El Bagre, Tarazá), Urabá (Apartadó, Turbo, Carepa), nordeste, comunidades Embera
+  [ACTORES]: FOLU Antioquia (Grupo Gestor), Gobernación, CORNARE, CORPOURABÁ, FAO, WFP, Agrosavia, alcaldías
+  [FUENTES]: folu-antioquia-2021, epcv-antioquia-gggi-2019, measuring-bioeconomy-antioquia-2021
+--- Row 7 ---
+  [DIMENSIÓN]: GOBERNANZA
+  [ESCALA]: Departamental
+  [ZONA]: Caldas
+  [PROBLEMA]: El PDD 2024-2027 no menciona "bioeconomía" explícitamente ni recupera los aprendizajes de la Misión de Sabios ni del Pro
+  [RECOMENDACIÓN]: Articular la Política CTeI (Ordenanza 952, Línea 2 de Bioeconomía) con el PDD 2024-2027 para cerrar la discontinuidad in
+  [CORTO PLAZO (1–3 años)]: Revisar el PDD 2024-2027 e incorporar metas explícitas de bioeconomía alineadas a la Ordenanza 952; establecer CODECTI c
+  [MEDIANO PLAZO (4–6 años)]: Desarrollar plan de implementación de la Línea 2 de Bioeconomía 2023-2033 con presupuesto anualizado y metas verificable
+  [LARGO PLAZO (7+ años)]: Institucionalizar la bioeconomía como eje transversal del desarrollo caldense; CODECTI consolidado como rector efectivo 
+  [ZONAS DE PRIORIZACIÓN]: Manizales (CODECTI, Parque Tecnológico de Caldas), Chinchiná (Cenicafé), municipios con menor institucionalidad CTeI
+  [ACTORES]: Gobernación de Caldas, CODECTI-Caldas, Parque Tecnológico de Caldas, Asamblea Departamental, DNP, MinCiencias
+  [FUENTES]: ordenanza-952-politica-ctei-caldas-2023, pdd-caldas-2024-2027, mision-sabios-caldas-2021
+--- Row 8 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Caldas
+  [PROBLEMA]: Programa Biofábricas 2022-2024 exitoso como modelo de biotecnología educativa (bioproductos desde residuos agropecuarios
+  [RECOMENDACIÓN]: Institucionalizar y escalar el modelo Biofábricas como pilar de biotecnología educativa productiva en todas las subregio
+  [CORTO PLAZO (1–3 años)]: Evaluar resultados del Programa Biofábricas 2022-2024; diseñar plan de escalamiento en las 6 subregiones; incorporar ind
+  [MEDIANO PLAZO (4–6 años)]: Replicar Biofábricas en las 6 subregiones articulando las 5 universidades aliadas; articular con plataforma 3BIO (BIOS) 
+  [LARGO PLAZO (7+ años)]: Consolidar Caldas como referente nacional de biotecnología educativa con 150+ IE activas; integrar bioproductos a export
+  [ZONAS DE PRIORIZACIÓN]: Subregiones centro sur (7,2% repitencia escolar) y bajo occidente (35% deserción), Chinchiná, Belalcázar, Neira
+  [ACTORES]: Gobernación de Caldas, U. de Manizales, MinCiencias, CINDE, BIOS, CODECTI-Caldas, IE rurales
+  [FUENTES]: biofabricas-caldas-2024, mision-sabios-caldas-2021, ordenanza-952-politica-ctei-caldas-2023
+--- Row 9 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Caldas
+  [PROBLEMA]: Cadena cafetera con alta generación de residuos biomásicos subutilizados; 59.058 ha de café con planta de liofilización 
+  [RECOMENDACIÓN]: Articular la capacidad productiva cafetera y guaduera de Caldas con modelos de economía circular y valorización de biopr
+  [CORTO PLAZO (1–3 años)]: Mapear residuos de la cadena del café por municipio; identificar tecnologías de valorización disponibles en Cenicafé y u
+  [MEDIANO PLAZO (4–6 años)]: Crear clúster de bioproductos del café en Chinchiná (cosméticos, alimentos funcionales, biomateriales); desarrollar la c
+  [LARGO PLAZO (7+ años)]: Consolidar modelo circular certificado de la cadena cafetera caldense; posicionar Chinchiná como hub nacional de bioprod
+  [ZONAS DE PRIORIZACIÓN]: Chinchiná (café + liofilización), Manizales (biomateriales guadua), Riosucio y Supía (residuos agropecuarios), Belalcáza
+  [ACTORES]: Cenicafé, Comité de Cafeteros de Caldas, Gobernación, Corpocaldas, U. Nacional Manizales, SENA Manizales
+  [FUENTES]: biofabricas-caldas-2024, ordenanza-952-politica-ctei-caldas-2023, pdd-caldas-2024-2027
+--- Row 10 ---
+  [DIMENSIÓN]: MEDIO AMBIENTE
+  [ESCALA]: Departamental
+  [ZONA]: Caldas
+  [PROBLEMA]: Pérdida acelerada de glaciares del Nevado del Ruiz (desde los años 50); bosque estable reducido de 151.176 ha (2014) a 1
+  [RECOMENDACIÓN]: Integrar la bioeconomía como estrategia de adaptación al cambio climático centrada en gestión de ecosistemas andinos, gl
+  [CORTO PLAZO (1–3 años)]: Incorporar metas de bioeconomía al Plan Departamental de Cambio Climático; iniciar SbN en cuencas abastecidas por el Nev
+  [MEDIANO PLAZO (4–6 años)]: Implementar portafolios de restauración en zonas de amortiguación de PNN Los Nevados y Selva de Florencia; articular avi
+  [LARGO PLAZO (7+ años)]: Deforestación neta cero en Caldas; glaciares monitoreados con ciencia ciudadana integrada a 3BIO; "Reserva de Biosfera C
+  [ZONAS DE PRIORIZACIÓN]: Municipios del PNN Los Nevados (Manizales, Villamaría, Neira), Selva de Florencia (Samaná, Pensilvania), municipios del 
+  [ACTORES]: Corpocaldas, PNN, IDEAM, Gobernación, Grupo de Glaciología UNAL, BIOS, comunidades, Audubon Society, Sociedad Caldense d
+  [FUENTES]: pdd-caldas-2024-2027, mision-sabios-caldas-2021, ordenanza-952-politica-ctei-caldas-2023
+--- Row 11 ---
+  [DIMENSIÓN]: SOCIAL
+  [ESCALA]: Departamental
+  [ZONA]: Caldas
+  [PROBLEMA]: Comunidades Emberá presentes en 11 municipios del occidente caldense con ricos saberes sobre biodiversidad andina; CRIDE
+  [RECOMENDACIÓN]: Incorporar los derechos y saberes de las comunidades Emberá en la Política CTeI de Caldas y en las cadenas de valor de b
+  [CORTO PLAZO (1–3 años)]: Mapear saberes biológicos y biodiversidad en resguardos Emberá de Caldas; iniciar diálogo intercultural con CRIDEC para 
+  [MEDIANO PLAZO (4–6 años)]: Desarrollar protocolos comunitarios Emberá para uso de biodiversidad y conocimientos; integrar saberes a la plataforma 3
+  [LARGO PLAZO (7+ años)]: Establecer gobernanza intercultural de bioeconomía en el occidente caldense; derechos de PI colectiva garantizados a los
+  [ZONAS DE PRIORIZACIÓN]: Riosucio (resguardo Cañamomo Lomaprieta), Supía, Anserma, Filadelfia, Belalcázar, Palestina, Neira
+  [ACTORES]: CRIDEC, Gobernación de Caldas, Ministerio del Interior, MADS, Corpocaldas, U. de Manizales, CINDE
+  [FUENTES]: ordenanza-952-politica-ctei-caldas-2023, mision-sabios-caldas-2021, biofabricas-caldas-2024
+--- Row 12 ---
+  [DIMENSIÓN]: GOBERNANZA
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Instrumentos departamentales de bioeconomía desarticulados entre sí; ausencia de instancia regional compartida; cada dep
+  [RECOMENDACIÓN]: Crear un mecanismo de gobernanza regional del Eje Cafetero que articule los instrumentos existentes y promueva una agend
+  [CORTO PLAZO (1–3 años)]: Instaurar mesa técnica del Eje Cafetero con delegados de las cuatro gobernaciones y las cuatro CAR; armonizar instrument
+  [MEDIANO PLAZO (4–6 años)]: Formalizar Comité Interinstitucional Eje Cafetero de Bioeconomía con mandato, presupuesto y metas cuantificables; desarr
+  [LARGO PLAZO (7+ años)]: Establecer un Observatorio Regional de Bioeconomía del Eje Cafetero con cuenta satélite propia integrada al DANE y al SI
+  [ZONAS DE PRIORIZACIÓN]: Medellín, Pereira, Armenia, Manizales (capitales departamentales) y municipios de interfaz bioproductiva
+  [ACTORES]: Gobernaciones, CORNARE, CARDER, CRQ, Corpocaldas, DNP, MADS, MADR, universidades regionales
+  [FUENTES]: estrategia-bioeconomia-antioquia-2023, plan-accion-carder-risaralda-2024-2027, folu-quindio-2019, ordenanza-952-politica
+--- Row 13 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Alta dependencia del monocultivo cafetero con vulnerabilidad a variabilidad climática (broca, roya, precios internaciona
+  [RECOMENDACIÓN]: Transitar hacia sistemas agroforestales cafeteros diversificados con certificaciones diferenciadas y acceso a mercados d
+  [CORTO PLAZO (1–3 años)]: Implementar pilotos de sistemas agroforestales café-sombra en 5 municipios priorizados por CAR; capacitar extensionistas
+  [MEDIANO PLAZO (4–6 años)]: Escalar modelos agroforestales con certificaciones diferenciadas (orgánico, Rainforest Alliance, huella de carbono); vin
+  [LARGO PLAZO (7+ años)]: Consolidar paisajes cafeteros diversificados y resilientes; integrar PSA y créditos de carbono como fuente de ingreso es
+  [ZONAS DE PRIORIZACIÓN]: Chinchiná, Manizales rural, Salento, Circasia, Santa Rosa de Cabal, Pereira rural, Jericó, Jardín
+  [ACTORES]: FNC, Cenicafé, comités de cafeteros, SENA, ICA, MADR, Asohofrucol
+  [FUENTES]: estrategia-bioeconomia-antioquia-2023, plan-accion-carder-risaralda-2024-2027, vision-risaralda-2032, folu-quindio-2019
+--- Row 14 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Alta generación de residuos del beneficio del café (pulpa, mucílago, aguas mieles) con tasa de aprovechamiento cercana a
+  [RECOMENDACIÓN]: Implementar modelos de valorización de subproductos agroindustriales del café, aguacate Hass, cacao y plátano con enfoqu
+  [CORTO PLAZO (1–3 años)]: Caracterizar residuos del beneficio del café y del aguacate Hass por municipio y volumen; identificar y evaluar tecnolog
+  [MEDIANO PLAZO (4–6 años)]: Instalar plantas piloto de valorización de pulpa de café en municipios con beneficio colectivo; crear mercados locales d
+  [LARGO PLAZO (7+ años)]: Consolidar economía circular agroindustrial certificada y trazable; integrar bioproductos derivados de residuos a mercad
+  [ZONAS DE PRIORIZACIÓN]: Municipios con beneficio colectivo del café (Chinchiná, Pereira rural); zonas aguacateras (Génova, Calarcá, Jericó)
+  [ACTORES]: Cooperativas cafeteras, Cenicafé, SENA, UTP, U. del Quindío, U. Nacional, CARS
+  [FUENTES]: biofabricas-caldas-2024, folu-quindio-2019, bioeconomia-lineamientos-agrosavia-2022
+--- Row 15 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Débil conexión entre la capacidad científica regional (834 grupos en Antioquia, 88 grupos A/A1 en Caldas) y la aplicació
+  [RECOMENDACIÓN]: Articular los ecosistemas de innovación universitaria con la economía rural del Eje Cafetero cerrando la brecha campo-ci
+  [CORTO PLAZO (1–3 años)]: Mapear grupos de investigación en biotecnología y bioproductos en las cuatro universidades âncla; crear convocatorias de
+  [MEDIANO PLAZO (4–6 años)]: Crear nodos regionales de bioeconomía en universidades; implementar ATER en bioeconomía para productores rurales; articu
+  [LARGO PLAZO (7+ años)]: Consolidar ecosistema de innovación en bioeconomía con parques tecnológicos interconectados, fondos de capital semilla y
+  [ZONAS DE PRIORIZACIÓN]: Medellín (Ruta N), Manizales (Parque Tecnológico de Caldas), Pereira (CIEBREG-UTP), Armenia (Uniquindío)
+  [ACTORES]: U. de Antioquia, U. Nacional, UTP, U. del Quindío, U. de Manizales, EAFIT, MinCiencias, iNNpulsa, BIOS
+  [FUENTES]: measuring-bioeconomy-antioquia-2021, ordenanza-952-politica-ctei-caldas-2023, mision-sabios-caldas-2021, biofabricas-cal
+--- Row 16 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Insuficiente desarrollo de cadenas de bioproductos diferenciados; producción primaria sin articulación a mercados de alt
+  [RECOMENDACIÓN]: Desarrollar cadenas de valor de bioproductos territoriales con identidad y sellos del Eje Cafetero articuladas a mercado
+  [CORTO PLAZO (1–3 años)]: Identificar bioproductos prioritarios (aceites esenciales, cosméticos naturales, hongos, frutas exóticas, derivados espe
+  [MEDIANO PLAZO (4–6 años)]: Certificar y formalizar al menos 5 cadenas de valor priorizadas; desarrollar marca regional de bioproductos del Eje Cafe
+  [LARGO PLAZO (7+ años)]: Posicionar el Eje Cafetero como hub de bioproductos sostenibles con sellos de origen + biodiversidad + carbono integrado
+  [ZONAS DE PRIORIZACIÓN]: Zonas agroforestales diversificadas; parques agroindustriales; comunidades con saberes productivos singulares
+  [ACTORES]: ProColombia, Cámaras de Comercio, MinComercio, ADR, gremios productivos, Artesanías de Colombia
+  [FUENTES]: tejido-empresarial-biotecnologia-risaralda-2019, bio-portafolio-ingredientes-naturales-2024, minkadev-competitividad-ing
+--- Row 17 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Limitado acceso a financiamiento verde para bioemprendedores y pequeños productores; baja articulación con fondos de coo
+  [RECOMENDACIÓN]: Construir un portafolio de proyectos de bioeconomía del Eje Cafetero y desarrollar instrumentos financieros diferenciado
+  [CORTO PLAZO (1–3 años)]: Mapear instrumentos existentes (Finagro, Bancóldex, GEF, BID, Fondo Acción); construir project pipeline regional de bioe
+  [MEDIANO PLAZO (4–6 años)]: Implementar líneas de crédito verde con tasas preferenciales (Finagro-bioeconomía); conectar productores con bonos verde
+  [LARGO PLAZO (7+ años)]: Crear fondo regional de bioeconomía con recursos mixtos público-privado-cooperación; integrar métricas de bioeconomía a 
+  [ZONAS DE PRIORIZACIÓN]: Municipios con alta concentración de pequeños productores cafeteros, resguardos indígenas, ZRC, territorios colectivos
+  [ACTORES]: Finagro, Bancóldex, BID, GEF, FIDA, Fondo Acción, gobernaciones, cooperativas de ahorro
+  [FUENTES]: guia-bioeconomia-sistema-financiero-2023, folu-quindio-2019, hoja-ruta-bioeconomia-antioquia-2023-2026, plan-accion-card
+--- Row 18 ---
+  [DIMENSIÓN]: MEDIO AMBIENTE
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Deforestación activa en los cuatro departamentos: Antioquia 10.472 ha perdidas en H1 2022 (IDEAM/WWF); Caldas redujo sus
+  [RECOMENDACIÓN]: Proteger y restaurar los corredores biológicos del Eje Cafetero como base irreemplazable de la bioeconomía regional de l
+  [CORTO PLAZO (1–3 años)]: Mapear y priorizar corredores biológicos; fortalecer acuerdos de conservación voluntaria en predios privados con incenti
+  [MEDIANO PLAZO (4–6 años)]: Restaurar cuencas hidrográficas y corredores priorizados; escalar esquemas PSA con monitoreo satelital participativo; im
+  [LARGO PLAZO (7+ años)]: Integrar ecosistemas restaurados a mercados internacionales de carbono y biodiversidad (Artículo 6 PA, Nature Credits); 
+  [ZONAS DE PRIORIZACIÓN]: Corredor Andes tropicales; cuencas del Cauca, San Juan y Magdalena; PNN Los Nevados, Tatamá, Selva de Florencia
+  [ACTORES]: CORNARE, CARDER, CRQ, Corpocaldas, PNN, TNC, WWF, Fondo Acción, MADS
+  [FUENTES]: plan-accion-carder-risaralda-2024-2027, folu-antioquia-2021, estrategia-bioeconomia-antioquia-2023, pdd-caldas-2024-2027
+--- Row 19 ---
+  [DIMENSIÓN]: MEDIO AMBIENTE
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Vulnerabilidad creciente de los sistemas cafeteros al cambio climático; pérdida acelerada de glaciares del Nevado del Ru
+  [RECOMENDACIÓN]: Integrar la bioeconomía como estrategia de adaptación climática y de bioturismo sostenible en los planes territoriales d
+  [CORTO PLAZO (1–3 años)]: Incorporar la bioeconomía en los PACC departamentales; implementar SbN en zonas con mayor vulnerabilidad climática; mape
+  [MEDIANO PLAZO (4–6 años)]: Implementar portafolios de SbN (restauración, agroforestería, manejo de cuencas); diseñar rutas de bioturismo regional c
+  [LARGO PLAZO (7+ años)]: Consolidar una bioeconomía regional resiliente al clima articulada con NDC de Colombia; posicionar el Eje Cafetero como 
+  [ZONAS DE PRIORIZACIÓN]: Cuencas hidrográficas críticas; franja cafeto-andina (1.200-2.000 msnm); PNN Los Nevados, Tatamá, Selva de Florencia; Pa
+  [ACTORES]: IDEAM, UNGRD, CARS regionales, MADS, DNP, PNN, Fontur, ProColombia, comunidades rurales
+  [FUENTES]: plan-accion-carder-risaralda-2024-2027, epcv-antioquia-gggi-2019, pdd-caldas-2024-2027, folu-quindio-2019, vision-risara
+--- Row 20 ---
+  [DIMENSIÓN]: SOCIAL
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Escasa formación específica en bioeconomía en todos los niveles educativos; brecha capital humano rural-urbana crítica (
+  [RECOMENDACIÓN]: Cerrar la brecha de capital humano rural-urbano en bioeconomía con formación técnica territorial diferenciada por depart
+  [CORTO PLAZO (1–3 años)]: Diseñar currículas SENA en bioeconomía para técnicos rurales; replicar el modelo educativo de Biofábricas de Caldas en l
+  [MEDIANO PLAZO (4–6 años)]: Crear programas de posgrado en bioeconomía en universidades regionales; fortalecer redes de conocimiento campesino-técni
+  [LARGO PLAZO (7+ años)]: Consolidar cultura regional de bioeconomía desde la educación básica; establecer Observatorio Regional permanente de Bio
+  [ZONAS DE PRIORIZACIÓN]: Capitales departamentales, municipios con SENA, instituciones educativas en zonas de ladera cafetera con alta deserción 
+  [ACTORES]: SENA, universidades regionales, MinEducación, gobernaciones, secretarías de educación, CINDE, MinCiencias
+  [FUENTES]: measuring-bioeconomy-antioquia-2021, biofabricas-caldas-2024, mision-sabios-caldas-2021
+--- Row 21 ---
+  [DIMENSIÓN]: SOCIAL
+  [ESCALA]: Regional
+  [ZONA]: Eje Cafetéro
+  [PROBLEMA]: Exclusión de comunidades Emberá (11 municipios de Caldas, resguardos de Risaralda), afrodescendientes (Urabá y Bajo Cauc
+  [RECOMENDACIÓN]: Incorporar los derechos de comunidades étnicas y campesinas en la gobernanza, el diseño y la distribución de beneficios 
+  [CORTO PLAZO (1–3 años)]: Mapear comunidades con saberes biológicos asociados a biodiversidad andina; iniciar diálogos interculturales con CRIDEC 
+  [MEDIANO PLAZO (4–6 años)]: Desarrollar protocolos comunitarios (Protocolo de Nagoya) para acceso y uso de recursos genéticos; vincular comunidades 
+  [LARGO PLAZO (7+ años)]: Establecer marcos de gobernanza intercultural para la bioeconomía regional; garantizar participación mínima del 20% de c
+  [ZONAS DE PRIORIZACIÓN]: Resguardos Emberá Chamí (Risaralda), occidente caldense (Riosucio, Supía), Urabá y Pacífico antioqueño
+  [ACTORES]: ONIC, CRIDEC, Ministerio del Interior, MADS, ANT, universidades interculturales, ONG
+  [FUENTES]: ordenanza-952-politica-ctei-caldas-2023, epcv-antioquia-gggi-2019, piiom-mision-bioeconomia-territorio-2023
+--- Row 22 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Quindío
+  [PROBLEMA]: Alta generación de residuos de aguacate Hass (crecimiento +418%, 2013-2021; cáscara + semilla + tallo = ~40% del fruto) 
+  [RECOMENDACIÓN]: Desarrollar cadenas de valor circular a partir de los residuos de aguacate, cacao, café y plátano del Quindío con enfoqu
+  [CORTO PLAZO (1–3 años)]: Caracterizar residuos de aguacate Hass y cacao por municipio; mapear tecnologías disponibles (aceite de aguacate en frío
+  [MEDIANO PLAZO (4–6 años)]: Implementar biobodegas de valorización de residuos en 3 municipios aguacateros; crear mercados locales de bioinsumos; ar
+  [LARGO PLAZO (7+ años)]: Consolidar circuitos circulares certificados; integrar bioproductos a mercados de exportación con trazabilidad y sello d
+  [ZONAS DE PRIORIZACIÓN]: Génova y Calarcá (mayor área aguacate Hass), Quimbaya (café + cacao), Montenegro y Filandia (plátano + banano)
+  [ACTORES]: Gobernación del Quindío, CRQ, Uniquindío, Asohofrucol Quindío, Agrosavia, SENA, MinComercio
+  [FUENTES]: folu-quindio-2019, bioeconomia-lineamientos-agrosavia-2022, bio-portafolio-ingredientes-naturales-2024
+--- Row 23 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Quindío
+  [PROBLEMA]: Piscicultura continental con baja tecnificación; proyecto SGR en ejecución 2022-2026 ($1.800M COP, Uniquindío + Gobernac
+  [RECOMENDACIÓN]: Escalar y replicar el modelo de acuicultura sistematizada con enfoque de bioeconomía para el conjunto del departamento y
+  [CORTO PLAZO (1–3 años)]: Evaluar resultados del proyecto SGR 2022-2026; documentar el modelo con ciencia ciudadana para replicabilidad; ampliar a
+  [MEDIANO PLAZO (4–6 años)]: Publicar protocolo de acuicultura-bioeconomía aplicable al Eje Cafetero; articular piscicultura con cadenas de valor de 
+  [LARGO PLAZO (7+ años)]: Posicionar al Quindío como referente de acuicultura sostenible andina; articular con sistemas agroforestales y economía 
+  [ZONAS DE PRIORIZACIÓN]: Filandia (Asociación de Piscicultores), Circasia, Quimbaya, Salento; pisos térmicos templados con fuentes hídricas (1.20
+  [ACTORES]: Gobernación del Quindío, Uniquindío, Asociación de Piscicultores de Filandia, MinCiencias, AUNAP, CRQ
+  [FUENTES]: acuicultura-quindio-2026, folu-quindio-2019, desarrollo-local-quindio-2024
+--- Row 24 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Quindío
+  [PROBLEMA]: Turismo representa el 8,3% del PIB (3.° en Colombia) sin planificación que evite sobrepasar capacidad de carga ecosistém
+  [RECOMENDACIÓN]: Transformar el turismo quindiano hacia un modelo regenerativo con sello de sostenibilidad, gestión de capacidad de carga
+  [CORTO PLAZO (1–3 años)]: Implementar estudios de capacidad de carga en los 5 atractivos con mayor presión (Salento, Valle del Cocora, Jardín Botá
+  [MEDIANO PLAZO (4–6 años)]: Lanzar la marca "Quindío Regenerativo y Competitivo" (propuesta FOLU 2019); desarrollar circuitos de turismo regenerativ
+  [LARGO PLAZO (7+ años)]: Posicionar al Quindío como destino global de turismo regenerativo; garantizar que los ingresos turísticos financien rest
+  [ZONAS DE PRIORIZACIÓN]: Salento (mayor presión), Pijao (turismo lento Slow Food), Filandia, Jardín Botánico de Armenia, Córdoba
+  [ACTORES]: MinComercio-Turismo, Fontur, ProColombia, Gobernación, Cámara de Comercio de Armenia, CRQ, Slow Food Pijao
+  [FUENTES]: folu-quindio-2019, desarrollo-local-quindio-2024
+--- Row 25 ---
+  [DIMENSIÓN]: MEDIO AMBIENTE
+  [ESCALA]: Departamental
+  [ZONA]: Quindío
+  [PROBLEMA]: 53% del territorio con vocación forestal pero ganadería extensiva ocupa el 31% del área (conflicto severo); expansión de
+  [RECOMENDACIÓN]: Implementar catastro multipropósito y zonificación participativa que proteja al caficultor tradicional, controle la conc
+  [CORTO PLAZO (1–3 años)]: Implementar catastro multipropósito en 4 municipios piloto (potencial incremento fiscal del 16-20%); establecer mecanism
+  [MEDIANO PLAZO (4–6 años)]: Aplicar catastro a los 12 municipios; zonificar con participación comunitaria protegiendo la identidad cafetera; crear i
+  [LARGO PLAZO (7+ años)]: Ordenamiento territorial participativo que proteja al caficultor, restaure 15.000 ha con vocación forestal y asegure dis
+  [ZONAS DE PRIORIZACIÓN]: Armenia, Calarcá, Montenegro y Quimbaya (mayor expansión aguacate Hass), Buenavista y Córdoba (mayor vocación forestal i
+  [ACTORES]: CRQ, Gobernación del Quindío, IGAC, ANT, Fedeorgánicos, Comité de Cafeteros Quindío, FAO, comunidades cafeteras
+  [FUENTES]: folu-quindio-2019, desarrollo-local-quindio-2024
+--- Row 26 ---
+  [DIMENSIÓN]: SOCIAL
+  [ESCALA]: Departamental
+  [ZONA]: Quindío
+  [PROBLEMA]: El Quindío desarrolló el primer roadmap FOLU subnacional del mundo (2019) con baja implementación post-COVID; pérdida y 
+  [RECOMENDACIÓN]: Actualizar e implementar la Hoja de Ruta FOLU Quindío como modelo de sistema alimentario regenerativo y plataforma de fi
+  [CORTO PLAZO (1–3 años)]: Actualizar el FOLU Quindío 2019 con metas 2025-2030; presentar portafolio de proyectos ante GEF, GCF y Fondo Colombia So
+  [MEDIANO PLAZO (4–6 años)]: Implementar los 3 ejes estratégicos FOLU en 6/12 municipios; crear denominación de origen "Quindío Regenerativo y Compet
+  [LARGO PLAZO (7+ años)]: Consolidar el Quindío como modelo global de sistema alimentario regenerativo; reducir pérdida y desperdicio alimentario 
+  [ZONAS DE PRIORIZACIÓN]: Salento (turismo y agricultura sostenible), Pijao (Slow Food), Filandia, Génova (aguacate + cítricos), Buenavista
+  [ACTORES]: E3, WRI, Gobernación, CRQ, Uniquindío, Slow Food Pijao, Comité de Cafeteros Quindío, SENA
+  [FUENTES]: folu-quindio-2019, acuicultura-quindio-2026, desarrollo-local-quindio-2024
+--- Row 27 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Risaralda
+  [PROBLEMA]: 106 iniciativas activas de NV en 12/14 municipios pero con bajo componente de biocomercio (solo 3%); 5 municipios sin Ba
+  [RECOMENDACIÓN]: Escalar y diversificar el portafolio de Negocios Verdes de Risaralda aumentando el componente de biocomercio y articulan
+  [CORTO PLAZO (1–3 años)]: Llegar a 130 NV verificados con estrategia de diversificación (aumentar biocomercio del 3% al 12%); activar BancO2 en 5 
+  [MEDIANO PLAZO (4–6 años)]: Desarrollar catálogo departamental de bioproductos con sello Risaralda; articular NV a cadenas de exportación de ingredi
+  [LARGO PLAZO (7+ años)]: Posicionar Risaralda como referente nacional de Negocios Verdes con 150+ iniciativas verificadas y tablero público de se
+  [ZONAS DE PRIORIZACIÓN]: Pueblo Rico y Mistrató (subregión Pacífico, mayor cobertura boscosa); municipios cafeteros de ladera; cuencas del San Ju
+  [ACTORES]: CARDER, Gobernación, CIEBREG, BancO2 (9 empresas activas), Nodo Regional NV (12 actores articulados)
+  [FUENTES]: plan-accion-carder-risaralda-2024-2027, tejido-empresarial-biotecnologia-risaralda-2019, vision-risaralda-2032
+--- Row 28 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Risaralda
+  [PROBLEMA]: Posición marginal en el mapa biotecnológico nacional (77% de empresas biotech en Antioquia, Bogotá y Valle del Cauca); P
+  [RECOMENDACIÓN]: Implementar efectivamente el Plan Departamental de Biotecnología con métricas claras, financiamiento comprometido y CIEB
+  [CORTO PLAZO (1–3 años)]: Revisar el Plan de Biotecnología con metas cuantificables; crear convocatoria CTeI-SGR para biotech de Risaralda; amplia
+  [MEDIANO PLAZO (4–6 años)]: Crear un centro regional de biotecnología aplicada CIEBREG-UTP; consolidar el Clúster de Bienes y Servicios Ambientales 
+  [LARGO PLAZO (7+ años)]: Posicionar a Pereira/Risaralda como polo biotecnológico regional; al menos 3 empresas biotech en el top 50 nacional; CIE
+  [ZONAS DE PRIORIZACIÓN]: Pereira (Clúster BSA, Política Pereira Innova), Dosquebradas (agroindustria), Santa Rosa de Cabal (agroindustria)
+  [ACTORES]: CARDER, UTP, CIEBREG, Gobernación, Cámara de Comercio de Pereira, MinCiencias, iNNpulsa, Comisión Regional de Competitiv
+  [FUENTES]: tejido-empresarial-biotecnologia-risaralda-2019, vision-risaralda-2032, plan-accion-carder-risaralda-2024-2027
+--- Row 29 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Risaralda
+  [PROBLEMA]: Risaralda concentra el 23,6% del área del Paisaje Cultural Cafetero (UNESCO 2011) con alto potencial de aviturismo y bio
+  [RECOMENDACIÓN]: Desarrollar un modelo de bioturismo territorial integrado al PCC UNESCO con gobernanza comunitaria y distribución justa 
+  [CORTO PLAZO (1–3 años)]: Crear circuitos de bioturismo en municipios del PCC con participación comunitaria; capacitar 100+ guías en interpretació
+  [MEDIANO PLAZO (4–6 años)]: Diseñar marca de bioturismo "Eje Cafetero Verde"; articular con Fontur y ProColombia; establecer límites de carga en los
+  [LARGO PLAZO (7+ años)]: Posicionar a Risaralda como referente de bioturismo cafetero internacional; garantizar que el bioturismo sea la primera 
+  [ZONAS DE PRIORIZACIÓN]: Pereira rural, Santa Rosa de Cabal (termas + naturaleza), Marsella (orquídeas), Pueblo Rico y Mistrató (selva pacífica),
+  [ACTORES]: MinComercio-Turismo, Fontur, ProColombia, CARDER, Gobernación, PNN Tatamá, comunidades rurales, operadores turísticos
+  [FUENTES]: plan-accion-carder-risaralda-2024-2027, vision-risaralda-2032, folu-quindio-2019
+--- Row 30 ---
+  [DIMENSIÓN]: ECONÓMICA
+  [ESCALA]: Departamental
+  [ZONA]: Risaralda
+  [PROBLEMA]: Economía departamental altamente dependiente del café con bajo valor agregado; escasos encadenamientos entre sector agrí
+  [RECOMENDACIÓN]: Diversificar la base productiva de Risaralda hacia bioproductos que complementen la caficultura y capturen valor bioecol
+  [CORTO PLAZO (1–3 años)]: Identificar 5 cadenas de bioproductos complementarias al café (PFNM, cacao, guadua, plantas medicinales, frutas andinas)
+  [MEDIANO PLAZO (4–6 años)]: Formalizar y certificar al menos 3 cadenas de bioproductos; articular con procesadoras de ingredientes naturales naciona
+  [LARGO PLAZO (7+ años)]: Consolidar economía productiva diversificada con bioproductos representando el 20% del VA agropecuario; escalar exportac
+  [ZONAS DE PRIORIZACIÓN]: Belén de Umbría (aguacate + cacao), Balboa y La Celia (agroforestería), Pueblo Rico y Mistrató (PFNM nativos de selva pa
+  [ACTORES]: FNC-Comité Risaralda, Gobernación, CARDER, CIEBREG, UTP, Cámara de Comercio de Pereira, SENA, ProColombia
+  [FUENTES]: tejido-empresarial-biotecnologia-risaralda-2019, plan-accion-carder-risaralda-2024-2027, bio-portafolio-ingredientes-nat
+--- Row 31 ---
+  [DIMENSIÓN]: MEDIO AMBIENTE
+  [ESCALA]: Departamental
+  [ZONA]: Risaralda
+  [PROBLEMA]: BancO2 activo en 9 municipios con solo 34 familias beneficiadas y 9 empresas compensadoras; 5 municipios sin cobertura p
+  [RECOMENDACIÓN]: Escalar el esquema BancO2 y los PSA de Risaralda para poner bajo incentivos de conservación al menos el 40% del bosque d
+  [CORTO PLAZO (1–3 años)]: Incorporar empresas públicas (IRISA, CHEC, Gobernación) como compensadoras en los 5 municipios sin BancO2; aumentar a 70
+  [MEDIANO PLAZO (4–6 años)]: Articular BancO2 con PSA del MADS (TasaCompensa) y REDD+ en sistema departamental integrado de incentivos; >150 familias
+  [LARGO PLAZO (7+ años)]: Lograr que el 40% del bosque denso (50.696 ha) esté bajo esquemas de incentivo a la conservación vinculados a bioeconomí
+  [ZONAS DE PRIORIZACIÓN]: Pueblo Rico y Mistrató (subregión 3 Pacífico, mayor cobertura forestal); cuencas de los ríos Tatamá, Mistrató y San Juan
+  [ACTORES]: CARDER, BancO2 (EEP, IRISA, Caravela Coffee, CHEC, Efigas, Comestibles Integrales), Gobernación, alcaldías
+  [FUENTES]: plan-accion-carder-risaralda-2024-2027, vision-risaralda-2032
