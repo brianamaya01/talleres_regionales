@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Plan de Acción Bioeconomía — Eje Cafetero</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <style>
 /* ── tokens ── */
 :root{
@@ -280,6 +282,53 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 .fab-btn{display:flex;align-items:center;gap:7px;background:var(--m);color:#fff;border:none;border-radius:28px;padding:11px 17px;font-size:.86rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(21,128,61,.35);transition:all .2s}
 .fab-btn:hover{background:var(--g);transform:translateY(-2px)}
 
+/* ── red de colaboración ── */
+.red-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;background:#fff;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:10}
+.red-bar h2{font-size:1rem;font-weight:700}
+.red-bar-ctrls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.red-ctrl-btn{background:var(--g-pale);border:1px solid var(--g-border);color:var(--g);border-radius:7px;padding:6px 13px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s}
+.red-ctrl-btn:hover{background:var(--g);color:#fff}
+.red-toggle-lbl{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.red-content{padding:24px 28px;display:flex;flex-direction:column;gap:32px}
+.red-section-hd{font-size:.75rem;font-weight:700;color:var(--g);margin-bottom:14px;text-transform:uppercase;letter-spacing:.07em}
+
+/* network grid */
+.red-net-grid{display:grid;grid-template-columns:1fr 270px;gap:16px;align-items:start}
+.net-svg-container{position:relative;background:#071a17;border-radius:12px;overflow:hidden;border:1px solid rgba(159,211,199,.2)}
+#network-svg{display:block;width:100%}
+#net-tooltip{position:absolute;background:#0f172a;color:#e2e8f0;border:1px solid rgba(159,211,199,.35);border-radius:9px;padding:11px 14px;font-size:.78rem;pointer-events:none;display:none;z-index:20;min-width:200px;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.ntip-name{font-weight:700;font-size:.88rem;color:#fff;margin-bottom:4px;line-height:1.35;word-break:break-word}
+.ntip-type{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:8px}
+.ntip-row{display:flex;justify-content:space-between;gap:14px;font-size:.74rem;color:rgba(255,255,255,.65);padding:2px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.ntip-row:last-child{border-bottom:none}
+.ntip-row b{color:#4ade80}
+.net-legend{display:flex;gap:14px;padding:9px 14px;background:rgba(255,255,255,.04);border-top:1px solid rgba(159,211,199,.12);flex-wrap:wrap}
+.nl-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:rgba(255,255,255,.6)}
+.nl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* metrics table */
+.net-metrics{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
+.nm-head-box{padding:12px 14px;background:var(--g);color:#fff;flex-shrink:0}
+.nm-title{font-size:.8rem;font-weight:700}
+.nm-sub{font-size:.67rem;opacity:.7;margin-top:1px}
+.nm-col-hd{display:grid;grid-template-columns:1fr 36px 36px 42px;gap:2px;padding:7px 10px;background:var(--gray);border-bottom:1px solid var(--border);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);flex-shrink:0}
+.nm-scroll{overflow-y:auto;max-height:420px;flex:1}
+.nm-row{display:grid;grid-template-columns:1fr 36px 36px 42px;gap:2px;padding:7px 10px;border-bottom:1px solid var(--border);font-size:.74rem;cursor:pointer;transition:background .1s;align-items:center}
+.nm-row:last-child{border-bottom:none}
+.nm-row:hover,.nm-row.nm-active{background:var(--g-pale)}
+.nm-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--text)}
+.nm-val{text-align:center;color:var(--muted)}
+.nm-total{text-align:center;font-weight:700;color:var(--g)}
+
+/* geo section */
+.red-geo-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.rgs-chip{display:flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:.88rem;font-weight:700;color:var(--text)}
+.rgs-chip span{font-size:.68rem;font-weight:500;color:var(--muted)}
+.red-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.red-chart-box{background:#0f3d36;border-radius:12px;padding:20px;border:1px solid rgba(159,211,199,.15)}
+.red-chart-title{font-size:.76rem;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:12px;text-align:center;letter-spacing:.04em;text-transform:uppercase}
+.red-chart-canvas-wrap{position:relative;height:280px}
+
 /* plan section responsive — merged below with actores/pres */
 
 /* ── section tabs (Plan / Actores) ── */
@@ -540,6 +589,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
   .pres-ctrl{padding:5px 10px;font-size:.7rem}
   .pres-slide-area{padding:8px 12px;gap:10px}
 }
+/* red section responsive */
+@media(max-width:900px){
+  .red-net-grid{grid-template-columns:1fr}
+  .red-charts-grid{grid-template-columns:1fr}
+  .red-content{padding:16px}
+}
 /* plan + actores responsive */
 @media(max-width:860px){
   .app{grid-template-columns:1fr}
@@ -576,6 +631,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 <div class="section-row">
   <button class="stab active" id="stab-plan" onclick="switchSection('plan')">📋 Plan de acción</button>
   <button class="stab" id="stab-actores" onclick="switchSection('actores')">👥 Actores del evento</button>
+  <button class="stab" id="stab-red" onclick="switchSection('red')">🔗 Red de colaboración</button>
 </div>
 
 <div id="plan-section"><div class="app">
@@ -688,6 +744,76 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
         <div id="map-org-list"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ RED DE COLABORACIÓN ═══════════════════════════════ -->
+<div id="red-section" style="display:none">
+  <!-- bar -->
+  <div class="red-bar">
+    <div>
+      <h2>Red de Colaboración — Eje Cafetero</h2>
+      <small id="red-stats" style="color:var(--muted);font-size:.77rem"></small>
+    </div>
+    <div class="red-bar-ctrls">
+      <button class="red-ctrl-btn" onclick="resetNetZoom()">⟳ Restablecer zoom</button>
+      <label class="red-toggle-lbl">
+        <input type="checkbox" id="net-labels-toggle" checked onchange="toggleNetLabels(this.checked)">
+        Etiquetas
+      </label>
+    </div>
+  </div>
+
+  <div class="red-content">
+
+    <!-- ── NETWORK ── -->
+    <div>
+      <div class="red-section-hd">🔗 Red de colaboración interorganizacional</div>
+      <div class="red-net-grid">
+
+        <!-- SVG panel -->
+        <div class="net-svg-container">
+          <svg id="network-svg" width="100%" height="500"></svg>
+          <div id="net-tooltip"></div>
+          <div class="net-legend">
+            <div class="nl-item"><div class="nl-dot" style="background:#4ade80"></div>Org. participante</div>
+            <div class="nl-item"><div class="nl-dot" style="background:#7dd3fc"></div>Entidad colaboradora</div>
+            <div class="nl-item"><div class="nl-dot" style="background:#fbbf24"></div>Ambas</div>
+            <div class="nl-item" style="color:rgba(255,255,255,.35);font-size:.67rem;margin-left:auto">Arrastra · Rueda para zoom</div>
+          </div>
+        </div>
+
+        <!-- Metrics table -->
+        <div class="net-metrics">
+          <div class="nm-head-box">
+            <div class="nm-title">📊 Métricas de grado</div>
+            <div class="nm-sub">Hover en el grafo para resaltar</div>
+          </div>
+          <div class="nm-col-hd">
+            <span>Nodo</span><span style="text-align:center">↓ In</span><span style="text-align:center">↑ Out</span><span style="text-align:center">∑</span>
+          </div>
+          <div class="nm-scroll" id="net-metrics-body"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── GEO ── -->
+    <div>
+      <div class="red-section-hd">📍 Distribución territorial de proyectos de bioeconomía</div>
+      <div class="red-geo-stats" id="red-geo-stats"></div>
+      <div class="red-charts-grid">
+        <div class="red-chart-box">
+          <div class="red-chart-title">Municipios por departamento · Sector</div>
+          <div class="red-chart-canvas-wrap"><canvas id="geo-bar-chart"></canvas></div>
+        </div>
+        <div class="red-chart-box">
+          <div class="red-chart-title">Distribución por sector bioconómico</div>
+          <div class="red-chart-canvas-wrap"><canvas id="sector-donut-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -830,7 +956,10 @@ const ORGS_DATA = [
   {id:7,org:"Corpocaldas",bio:"La Corporación Autónoma Regional de Caldas (Corpocaldas) es la entidad encargada de la gestión, protección y control del medio ambiente y los recursos naturales renovables en el departamento de Caldas, promoviendo la conservación, el uso sostenible de los ecosistemas y la participación ciudadana para el desarrollo regional sostenible.",keywords:["Ambiental", "Bioeconomía", "Conservación"],link:null,biowiki:"https://brianamaya01.github.io/biolink_col/wiki/entities/Corpocaldas",coord:[5.066979767689393,-75.51824580346957],foto:"corpocaldas.png"},
   {id:8,org:"Glamping Leon dormido",bio:"Es reconocido oficialmente como el hospedaje de este tipo a mayor altura en Colombia, ubicado entre los 3,800 y 4,000 metros sobre el nivel del mar. Se sitúa de manera estratégica en la vía que conecta a Manizales con Murillo, en el sector de La Tribuna, justo frente al majestuoso e imponente Volcán Nevado del Ruiz.",keywords:["Turismo"],link:"www.glampingleondormido.com/",biowiki:null,coord:[4.97946913524573,-75.3439440909004],foto:"leon_dormido.png"},
   {id:9,org:"Alcaldía de Villamaria",bio:"Nuestra organización desarrolla iniciativas sociales, ambientales y comunitarias en el municipio de Villamaría, promoviendo el aprovechamiento sostenible de los recursos del territorio, el fortalecimiento de emprendimientos locales y la generación de espacios de educación y participación ciudadana orientados al desarrollo sostenible y la bioeconomía como herramienta de transformación social y económica.",keywords:["Turismo de Naturaleza", "Avisturismo", "Termales"],link:"www.alcaldiadevillamaria.com",biowiki:null,coord:[5.045436552988614,-75.51197293230574],foto:"alcaldia-villamaria.jpg"},
-  {id:10,org:"Hacienda el Bosque sas",bio:"Somo un lodge especializado en la creación de escenarios para realizar la actividad de observación y fotografía de aves, orquídeas, mamíferos y paisajes",keywords:["Turismo de naturaleza"],link:"https://www.instagram.com/haciendaelbosque/?hl=es",biowiki:null,coord:[5.025321500105218,-75.3697553003204],foto:"hacienda-bosque.jpg"}
+  {id:10,org:"Hacienda el Bosque sas",bio:"Somo un lodge especializado en la creación de escenarios para realizar la actividad de observación y fotografía de aves, orquídeas, mamíferos y paisajes",keywords:["Turismo de naturaleza"],link:"https://www.instagram.com/haciendaelbosque/?hl=es",biowiki:null,coord:[5.025321500105218,-75.3697553003204],foto:"hacienda-bosque.jpg"},
+  {id:11,org:"Hacienda Charrascal",bio:"Nuestra organización integra turismo rural, patrimonio cultural cafetero, gastronomía tradicional y sostenibilidad ambiental a través de experiencias que promueven el aprovechamiento responsable de los recursos naturales y culturales del territorio. Desde Hacienda Charrascal y Fogón de Palo impulsamos prácticas relacionadas con la bioeconomía mediante el turismo sostenible, la valorización del café y los productos locales, la conservación del paisaje cultural cafetero, el fortalecimiento de economías rurales y la generación de experiencias educativas y culturales conectadas con la biodiversidad y las tradiciones campesinas.",keywords:["Patrimonio – Sostenibilidad – Turismo"],link:"https://haciendacharrascal.co/",biowiki:null,coord:[5.133308468072525,-75.50106369778496],foto:"charrascal.jpg"},
+  {id:12,org:"Hotel Termales del Ruiz",bio:"Hotel Termales del Ruiz integra prácticas de turismo sostenible enfocadas en el aprovechamiento responsable de los recursos naturales y el bienestar ambiental. La organización promueve experiencias de ecoturismo y bienestar alrededor de los ecosistemas de alta montaña y las aguas termales, impulsando la conservación ambiental, el uso eficiente de recursos, la educación ambiental y el desarrollo sostenible del territorio mediante actividades turísticas basadas en la biodiversidad y los servicios ecosistémicos de la región.",keywords:["Turismo – Bienestar – Sostenibilidad"],link:"https://termalesdelruiz.com/",biowiki:null,coord:[4.970529390345127,-75.37822837403061],foto:"termales_ruiz.png"},
+  {id:13,org:"minkalab.org",bio:"MinkaLab impulsa iniciativas de bioeconomía a través de la producción agroecológica, la transformación de productos agrícolas, el turismo rural y las experiencias educativas basadas en la biodiversidad local. Trabajamos en la regeneración de ecosistemas y suelos, promoviendo modelos productivos que generan valor económico a partir del uso sostenible de los recursos biológicos y los conocimientos tradicionales. Además, fortalecemos capacidades comunitarias mediante procesos de intercambio de saberes, innovación social y desarrollo de emprendimientos que contribuyen al bienestar de las personas y la conservación del territorio.",keywords:["Regeneración", "Cultura", "Innovación Social"],link:"www.minkalab.org",biowiki:null,coord:[4.876603920093241,-75.6046299554575],foto:"minkalab.jpg"}
 ];
 
 const PERSONAS_DATA = [
@@ -850,8 +979,23 @@ const PERSONAS_DATA = [
   {nombre:"Sonia Cortés Bedoya",perfil:"Bióloga, líder del programa Negocios Verdes Corpocaldas",red:"https://www.linkedin.com/in/sonia-cort%C3%A9s-bedoya-366b8b94/",email:"soniacortes@corpocaldas.gov.co",departamento:"Caldas",cargo:"Proesional especializada",genero:"Femenino",org:"Corpocaldas"},
   {nombre:"German Gomez",perfil:"Administrador de Empresas",red:"https://www.linkedin.com/home?originalSubdomain=co",email:"leondormidoglamping@gmail.com",departamento:"Caldas",cargo:"Propietario",genero:"Masculino",org:"Glamping Leon dormido"},
   {nombre:"Lina Hernández",perfil:"Administrador de negocios,Organizador de eventos pequeños y de gran escala, experto construcción de productos turísticos, de promoción y difusión",red:"Lina Hernández López",email:"Pmasmedios@gmail.com",departamento:"Caldas",cargo:"Aseaoe unidad de turismo alcaldia de Villamaria",genero:"Femenino",org:"Alcaldía de Villamaria"},
-  {nombre:"Juan Martín Pérez Gómez",perfil:"Soy un administrador de empresas y negociador internacional, con estudios en lengua inglesa y francesa , nivel b2 y c1, con experiencia de 7 años en el sector turístico de naturaleza",red:"instagram y facebook: hacienda el bosque",email:"haciendaelbosqueecoturismo@gmail.com",departamento:"Caldas",cargo:"gerente y representante legal",genero:"Masculino",org:"hacienda el bosque sas"}
+  {nombre:"Juan Martín Pérez Gómez",perfil:"Soy un administrador de empresas y negociador internacional, con estudios en lengua inglesa y francesa , nivel b2 y c1, con experiencia de 7 años en el sector turístico de naturaleza",red:"instagram y facebook: hacienda el bosque",email:"haciendaelbosqueecoturismo@gmail.com",departamento:"Caldas",cargo:"gerente y representante legal",genero:"Masculino",org:"hacienda el bosque sas"},
+  {nombre:"Arcesio Holguín Orozco",perfil:"Filósofo y especialista en sostenibilidad y nuevas economías. Actualmente lidero procesos comerciales y de posicionamiento territorial en Hacienda Charrascal y Fogón de Palo, articulando alianzas entre empresa, cultura y comunidad. Además, soy creador de SUMÁNDONOS, una iniciativa de innovación social enfocada en sostenibilidad, reconciliación ambiental y trabajo comunitario. Interesado en la bioeconomía, las nuevas economías y el desarrollo territorial sostenible.",red:"www.linkedin.com/in/arcesio-holguín-41a178142",email:"arcesio.holguin@gmail.com",departamento:"Caldas",cargo:"Representante Legal",genero:"Masculino",org:"Hacienda Charrascal"},
+  {nombre:"Kely Dahiana Gutiérrez Patiño",perfil:"Consultora en implementación, acompañamiento y certificación de sistemas de gestión en calidad, sostenibilidad y seguridad y salud en el trabajo.",red:"https://www.instagram.com/kelly__dahiana/?hl=es",email:"calidad@hotelcarretero.com",departamento:"Caldas",cargo:"Lider de Gestión Integral y desarrollo sostenible",genero:"Femenino",org:"Inversiones GFL S.A"},
+  {nombre:"Gabriel Vanegas",perfil:"Gabriel Vanegas es emprendedor social, facilitador de procesos comunitarios y cofundador de MinkaLab, un laboratorio vivo orientado a la regeneración territorial, el intercambio de saberes y la innovación social. Su trabajo integra agroecología, turismo consciente, educación experiencial y desarrollo comunitario, promoviendo iniciativas que fortalecen la relación entre las personas, la cultura y la naturaleza. Cuenta con experiencia en el diseño y gestión de proyectos de impacto social, ambiental y cultural, así como en la creación de experiencias de aprendizaje vinculadas al buen vivir y la sostenibilidad.",red:"https://www.instagram.com/minkalabcolombia/",email:"info@minkalab.org",departamento:"Risaralda",cargo:"director",genero:"Masculino",org:"minkalab.org"}
 ];
+
+// ═══════════════════════════════════════════
+// RED DATA
+// ═══════════════════════════════════════════
+const RED_DATA = {
+  respuestas: [
+    {nombre:"Brian Amaya",org:"Yumbol",colaboradoras:["Centro de Investigaciones en Medio Ambiente y Desarrollo (CIMAD) de la Universidad de Manizales", "Corpocaldas", "Glamping Leon dormido", "Universidad de Antioquía", "Universidad de Manizales", "hacienda el bosque sas"],departamentos:["Caldas"],municipios:{"Caldas": ["Manizales", "Aguadas", "Anserma"]},sectores:{"Aguadas": "Residuos", "Manizales": "Biotecnología", "Anserma": "Agricultura"}},
+    {nombre:"Daniel Valencia",org:"Ecofinca la soledad",colaboradoras:["Centro de Investigaciones en Medio Ambiente y Desarrollo (CIMAD) de la Universidad de Manizales", "ISE.sas", "Instituto Humboldt", "Universidad de Antioquía", "Universidad de Manizales", "hacienda el bosque sas"],departamentos:["Antioquia", "Caldas"],municipios:{"Caldas": ["Chinchiná", "La Dorada"], "Antioquia": ["Medellín", "Caracolí", "Gómez Plata", "La Estrella", "La Pintada"]},sectores:{"La Pintada": "Agricultura", "Chinchiná": "Forestal", "Medellín": "Biotecnología", "La Estrella": "Residuos", "Caracolí": "Residuos", "Gómez Plata": "Residuos", "La Dorada": "Forestal"}},
+    {nombre:"Sonia Cortés Bedoya",org:"Corpocaldas",colaboradoras:["C Minds", "Corpocaldas", "Ruta Cafetera Ecotours", "Universidad de Manizales", "hacienda el bosque sas", "minkalab.org"],departamentos:["Antioquia", "Risaralda"],municipios:{"Antioquia": ["Alejandría", "Abejorral", "Barbosa", "Argelia", "Arboletes"], "Risaralda": ["Pereira", "Belén de Umbría", "Apía", "Balboa", "La Virginia", "La Celia", "Guática", "Quinchía", "Pueblo Rico", "Santuario"]},sectores:{"Balboa": "Biotecnología", "Arboletes": "Residuos", "La Celia": "Agricultura", "Argelia": "Transversal", "Belén de Umbría": "Forestal", "Abejorral": "Residuos", "Santuario": "Residuos", "Alejandría": "Biotecnología", "Guática": "Forestal", "La Virginia": "Residuos", "Pereira": "Residuos", "Pueblo Rico": "Residuos", "Apía": "Residuos", "Barbosa": "Energía", "Quinchía": "Biotecnología"}},
+    {nombre:"Clemencia Amaya",org:"Bruma Cacao",colaboradoras:["C Minds", "Instituto Humboldt", "Inversiones GFL S.A", "Ruta Cafetera Ecotours", "Universidad de Manizales", "hacienda el bosque sas"],departamentos:["Antioquia", "Quindío", "Risaralda"],municipios:{"Quindío": ["Calarcá", "Armenia"], "Risaralda": ["Todos los municipios"], "Antioquia": ["Todos los municipios"]},sectores:{"Todos los municipios": "Energía", "Armenia": "Forestal", "Calarcá": "Residuos"}}
+  ]
+};
 
 // ═══════════════════════════════════════════
 // STATE
@@ -1394,12 +1538,16 @@ let currentSection = 'plan';
 
 function switchSection(sec){
   currentSection = sec;
-  document.getElementById('plan-section').style.display = sec==='plan' ? '' : 'none';
+  document.getElementById('plan-section').style.display   = sec==='plan'    ? '' : 'none';
   document.getElementById('actores-section').style.display = sec==='actores' ? '' : 'none';
-  document.getElementById('stab-plan').classList.toggle('active', sec==='plan');
-  document.getElementById('stab-actores').classList.toggle('active', sec==='actores');
+  document.getElementById('red-section').style.display     = sec==='red'     ? '' : 'none';
+  ['plan','actores','red'].forEach(s=>
+    document.getElementById('stab-'+s).classList.toggle('active', s===sec));
   if(sec==='actores' && !actoresBuilt){ buildActores(); actoresBuilt=true; }
   if(sec==='actores' && avCurrent==='map' && !mapInitialized){ initMap(); }
+  if(sec==='red' && !redBuilt){ buildRedSection(); redBuilt=true; }
+  // invalidate maps if switching back
+  if(sec==='actores' && avCurrent==='map' && leafletMap) setTimeout(()=>leafletMap.invalidateSize(),100);
 }
 
 // ═══════════════════════════════════════════
@@ -1724,6 +1872,307 @@ function presTogglePlay(){
   presPlaying = !presPlaying;
   document.getElementById('pres-play-btn').textContent = presPlaying ? '⏸ Pausar' : '▶ Reanudar';
   if(presPlaying){ startPresTimer(); } else { clearPresTimers(); }
+}
+
+// ═══════════════════════════════════════════
+// RED DE COLABORACIÓN
+// ═══════════════════════════════════════════
+let redBuilt = false;
+let _netSim = null, _netZoom = null, _netSvg = null;
+let _geoCharts = [];
+
+// ── data processing ──────────────────────────────────────────────────────────
+function processRedData(){
+  const nodeMap = {};
+  const edgeSet = new Set();
+  const geo = {};
+
+  RED_DATA.respuestas.forEach(r => {
+    const org = r.org.trim();
+    if(!nodeMap[org]) nodeMap[org] = {id:org, isSource:false, indegree:0, outdegree:0};
+    nodeMap[org].isSource = true;
+
+    (r.colaboradoras||[]).forEach(raw => {
+      const c = raw.trim();
+      if(!c) return;
+      const key = org + '\x01' + c;
+      if(edgeSet.has(key)) return;      // deduplicate: same org→entity only once
+      edgeSet.add(key);
+      if(!nodeMap[c]) nodeMap[c] = {id:c, isSource:false, indegree:0, outdegree:0};
+      nodeMap[org].outdegree++;
+      nodeMap[c].indegree++;
+    });
+
+    // geo: deduplicar mismo depto+municipio de distintas respuestas
+    const muns = (typeof r.municipios==='string') ? JSON.parse(r.municipios) : r.municipios;
+    const secs = (typeof r.sectores==='string')   ? JSON.parse(r.sectores)   : r.sectores;
+    Object.entries(muns||{}).forEach(([depto, muniList]) => {
+      if(!geo[depto]) geo[depto] = {};
+      muniList.forEach(mun => {
+        if(!geo[depto][mun]) geo[depto][mun] = new Set();
+        geo[depto][mun].add(secs[mun] || 'Sin sector');
+      });
+    });
+  });
+
+  Object.values(nodeMap).forEach(n => { n.total = n.indegree + n.outdegree; });
+  const nodes = Object.values(nodeMap);
+  const links = [...edgeSet].map(e => {
+    const sep = e.indexOf('\x01');
+    return {source: e.slice(0, sep), target: e.slice(sep+1)};
+  });
+  return {nodes, links, geo};
+}
+
+// ── build section ─────────────────────────────────────────────────────────────
+function buildRedSection(){
+  const {nodes, links, geo} = processRedData();
+  // stats bar
+  const nSrc = nodes.filter(n=>n.isSource).length;
+  const nDeptos = Object.keys(geo).length;
+  const nMuns = Object.values(geo).reduce((a,d)=>a+Object.keys(d).length, 0);
+  document.getElementById('red-stats').textContent =
+    `${nSrc} organizaciones participantes · ${links.length} colaboraciones únicas · ${nDeptos} departamentos · ${nMuns} municipios`;
+  renderMetricsTable(nodes);
+  initNetworkViz(nodes, links);
+  initGeoCharts(geo);
+}
+
+// ── metrics table ─────────────────────────────────────────────────────────────
+function renderMetricsTable(nodes){
+  const sorted = [...nodes].sort((a,b)=>b.total-a.total);
+  document.getElementById('net-metrics-body').innerHTML = sorted.map(n=>`
+    <div class="nm-row" data-nid="${esc(n.id)}" onclick="highlightFromTable('${n.id.replace(/'/g,"\\'")}')">
+      <span class="nm-name" title="${esc(n.id)}">${esc(n.id.length>26?n.id.slice(0,24)+'…':n.id)}</span>
+      <span class="nm-val">${n.indegree}</span>
+      <span class="nm-val">${n.outdegree}</span>
+      <span class="nm-total">${n.total}</span>
+    </div>`).join('');
+}
+
+// ── D3 network ────────────────────────────────────────────────────────────────
+function initNetworkViz(nodesData, linksData){
+  const wrap = document.querySelector('.net-svg-container');
+  const W = wrap.clientWidth || 700;
+  const H = 500;
+  const nodeR = n => Math.max(9, Math.min(30, n.total * 3.5 + 9));
+  const nodeColor = n => {
+    if(n.isSource && n.indegree > 0) return '#fbbf24';  // both directions
+    if(n.isSource) return '#4ade80';                      // source org only
+    return '#7dd3fc';                                     // collaborator only
+  };
+
+  const svgEl = document.getElementById('network-svg');
+  svgEl.setAttribute('height', H);
+
+  const svg = d3.select(svgEl);
+  svg.selectAll('*').remove();
+
+  // Arrow marker
+  svg.append('defs').append('marker')
+    .attr('id','net-arrow').attr('viewBox','0 -4 8 8')
+    .attr('refX',2).attr('refY',0)
+    .attr('markerWidth',6).attr('markerHeight',6)
+    .attr('orient','auto')
+    .append('path').attr('d','M0,-4L8,0L0,4').attr('fill','rgba(159,211,199,.5)');
+
+  const zoomBeh = d3.zoom().scaleExtent([0.15,6])
+    .on('zoom', e => g.attr('transform', e.transform));
+  svg.call(zoomBeh);
+  _netZoom = zoomBeh; _netSvg = svg;
+
+  const g = svg.append('g');
+
+  // clone for sim
+  const nodes = nodesData.map(n=>({...n}));
+  const links = linksData.map(l=>({...l}));
+
+  const sim = d3.forceSimulation(nodes)
+    .force('link',    d3.forceLink(links).id(d=>d.id).distance(d=>100+(d.source.total||0)*4))
+    .force('charge',  d3.forceManyBody().strength(-320))
+    .force('center',  d3.forceCenter(W/2, H/2))
+    .force('collide', d3.forceCollide(n=>nodeR(n)+10));
+  _netSim = sim;
+
+  // links
+  const link = g.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke','rgba(159,211,199,.3)')
+    .attr('stroke-width', 1.5)
+    .attr('marker-end','url(#net-arrow)');
+
+  // nodes
+  const nodeG = g.append('g').selectAll('g').data(nodes).join('g')
+    .attr('class','net-node-g')
+    .style('cursor','pointer')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on('drag', (e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on('end',  (e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+
+  nodeG.append('circle')
+    .attr('r', d=>nodeR(d))
+    .attr('fill', d=>nodeColor(d))
+    .attr('fill-opacity', 0.9)
+    .attr('stroke','#071a17')
+    .attr('stroke-width',2.5);
+
+  const labelG = nodeG.append('g').attr('class','net-label');
+  labelG.append('text')
+    .text(d => d.id.length>20 ? d.id.slice(0,18)+'…' : d.id)
+    .attr('text-anchor','middle')
+    .attr('dy', d=>nodeR(d)+13)
+    .attr('font-size',10.5)
+    .attr('fill','rgba(255,255,255,.82)')
+    .attr('pointer-events','none');
+
+  // tooltip
+  const tip = document.getElementById('net-tooltip');
+  nodeG.on('mouseenter',(e,d)=>{
+    tip.style.display='block';
+    const typeLabel = d.isSource && d.indegree>0 ? '🟡 Participante y colaboradora'
+                    : d.isSource ? '🟢 Org. participante'
+                    : '🔵 Entidad colaboradora';
+    tip.innerHTML=`
+      <div class="ntip-name">${esc(d.id)}</div>
+      <div class="ntip-type">${typeLabel}</div>
+      <div class="ntip-row"><span>Indegree (entradas)</span><b>${d.indegree}</b></div>
+      <div class="ntip-row"><span>Outdegree (salidas)</span><b>${d.outdegree}</b></div>
+      <div class="ntip-row"><span>Total degree</span><b>${d.total}</b></div>`;
+    _positionTip(e, tip);
+    // highlight connected
+    const conn = new Set([d.id]);
+    links.forEach(l=>{if(l.source.id===d.id)conn.add(l.target.id);if(l.target.id===d.id)conn.add(l.source.id);});
+    nodeG.style('opacity',n=>conn.has(n.id)?1:.12);
+    link.style('opacity',l=>l.source.id===d.id||l.target.id===d.id?1:.05);
+    // highlight table row
+    document.querySelectorAll('.nm-row').forEach(r=>r.classList.toggle('nm-active',r.dataset.nid===d.id));
+  }).on('mousemove',e=>_positionTip(e,tip))
+    .on('mouseleave',()=>{
+      tip.style.display='none';
+      nodeG.style('opacity',1); link.style('opacity',1);
+      document.querySelectorAll('.nm-row').forEach(r=>r.classList.remove('nm-active'));
+    });
+
+  sim.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+        .attr('x2',d=>{
+          // shorten to node edge
+          const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y;
+          const dist=Math.sqrt(dx*dx+dy*dy)||1;
+          return d.target.x - (dx/dist)*nodeR(d.target);
+        })
+        .attr('y2',d=>{
+          const dx=d.target.x-d.source.x, dy=d.target.y-d.source.y;
+          const dist=Math.sqrt(dx*dx+dy*dy)||1;
+          return d.target.y - (dy/dist)*nodeR(d.target);
+        });
+    nodeG.attr('transform',d=>`translate(${d.x},${d.y})`);
+  });
+}
+
+function _positionTip(e, tip){
+  const rect = document.getElementById('network-svg').getBoundingClientRect();
+  let x = e.clientX - rect.left + 14;
+  let y = e.clientY - rect.top  - 10;
+  if(x + 260 > rect.width)  x = e.clientX - rect.left - 270;
+  if(y + 160 > rect.height) y = e.clientY - rect.top  - 170;
+  tip.style.left = Math.max(0,x)+'px';
+  tip.style.top  = Math.max(0,y)+'px';
+}
+
+function resetNetZoom(){
+  if(_netSvg && _netZoom){
+    _netSvg.transition().duration(500).call(_netZoom.transform, d3.zoomIdentity);
+  }
+}
+
+function toggleNetLabels(show){
+  d3.selectAll('.net-label').style('display', show ? null : 'none');
+}
+
+function highlightFromTable(nodeId){
+  if(!_netSvg) return;
+  _netSvg.selectAll('.net-node-g').each(function(d){
+    if(d.id === nodeId) d3.select(this).dispatch('mouseenter');
+  });
+}
+
+// ── Chart.js geo charts ───────────────────────────────────────────────────────
+const SECTOR_COLORS = {
+  'Biotecnología':'#3b82f6','Residuos':'#ef4444','Agricultura':'#22c55e',
+  'Forestal':'#92400e','Energía':'#f59e0b','Transversal':'#8b5cf6','Sin sector':'#6b7280'
+};
+
+function initGeoCharts(geo){
+  _geoCharts.forEach(c=>c.destroy()); _geoCharts=[];
+
+  const deptos = Object.keys(geo);
+  // collect all sectors
+  const allSectors = [...new Set(
+    Object.values(geo).flatMap(d=>Object.values(d).flatMap(s=>[...s]))
+  )].filter(Boolean);
+
+  // stacked bar
+  const barDatasets = allSectors.map(sec=>({
+    label: sec,
+    data: deptos.map(d=>Object.values(geo[d]).filter(s=>s.has(sec)).length),
+    backgroundColor: SECTOR_COLORS[sec]||'#888',
+    borderRadius: 3,
+    borderSkipped: false,
+  }));
+
+  const barCtx = document.getElementById('geo-bar-chart').getContext('2d');
+  _geoCharts.push(new Chart(barCtx,{
+    type:'bar',
+    data:{labels:deptos, datasets:barDatasets},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#e2e8f0',font:{size:11},boxWidth:12,padding:10}},
+        tooltip:{mode:'index',
+          callbacks:{title:items=>`${items[0].label} — ${items.reduce((a,i)=>a+i.raw,0)} municipios`}}
+      },
+      scales:{
+        x:{stacked:true,ticks:{color:'#9fd3c7'},grid:{color:'rgba(255,255,255,.06)'},
+           title:{display:true,text:'Departamento',color:'#9fd3c7',font:{size:11}}},
+        y:{stacked:true,ticks:{color:'#9fd3c7',stepSize:1},grid:{color:'rgba(255,255,255,.06)'},
+           title:{display:true,text:'Nº municipios',color:'#9fd3c7',font:{size:11}}}
+      }
+    }
+  }));
+
+  // donut sector
+  const sectorCounts={};
+  Object.values(geo).forEach(d=>Object.values(d).forEach(sSet=>sSet.forEach(s=>{sectorCounts[s]=(sectorCounts[s]||0)+1;})));
+
+  const donutCtx = document.getElementById('sector-donut-chart').getContext('2d');
+  _geoCharts.push(new Chart(donutCtx,{
+    type:'doughnut',
+    data:{
+      labels:Object.keys(sectorCounts),
+      datasets:[{
+        data:Object.values(sectorCounts),
+        backgroundColor:Object.keys(sectorCounts).map(s=>SECTOR_COLORS[s]||'#888'),
+        borderColor:'#0f3d36', borderWidth:3, hoverOffset:10,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{position:'right',labels:{color:'#e2e8f0',font:{size:12},padding:14,boxWidth:13}},
+        tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.raw} municipios`}}
+      }
+    }
+  }));
+
+  // stat chips
+  const totalMuns = Object.values(geo).reduce((a,d)=>a+Object.keys(d).length,0);
+  document.getElementById('red-geo-stats').innerHTML =
+    `<div class="rgs-chip">${Object.keys(geo).length} <span>Departamentos</span></div>
+     <div class="rgs-chip">${totalMuns} <span>Municipios</span></div>`+
+    Object.entries(sectorCounts).sort((a,b)=>b[1]-a[1]).map(([s,n])=>
+      `<div class="rgs-chip" style="border-color:${SECTOR_COLORS[s]||'#888'};color:${SECTOR_COLORS[s]||'#888'}">${n} <span>${s}</span></div>`
+    ).join('');
 }
 
 // ═══════════════════════════════════════════

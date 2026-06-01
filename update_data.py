@@ -13,6 +13,7 @@ Requisitos:
     pip install openpyxl
 """
 
+import csv
 import openpyxl
 import json
 import re
@@ -30,6 +31,7 @@ SCRIPT_DIR   = os.path.dirname(os.path.abspath(__file__))
 HTML_FILE    = os.path.join(SCRIPT_DIR, 'index.html')
 PADB_FILE    = os.path.join(SCRIPT_DIR, 'raw', 'padb_eje_cafetero.xlsx')
 ACTORES_FILE = os.path.join(SCRIPT_DIR, 'raw', 'actores.xlsx')
+RED_CSV      = os.path.join(SCRIPT_DIR, 'raw', 'resultados_red.csv')
 
 
 # ─── helpers ────────────────────────────────────────────────────────────────
@@ -153,15 +155,56 @@ def personas_to_js(personas):
     return "[\n" + ",\n".join(lines) + "\n]"
 
 
+# ─── lectura de CSV red ──────────────────────────────────────────────────────
+
+def read_red_csv():
+    respuestas = []
+    with open(RED_CSV, encoding='utf-8-sig') as f:
+        for row in csv.DictReader(f):
+            colabs = [c.strip() for c in row.get('Entidades_Colaboradoras','').split(',') if c.strip()]
+            deptos = [d.strip() for d in row.get('Departamentos','').split(',')           if d.strip()]
+            try:
+                municipios = json.loads(row.get('Municipios_Por_Depto','{}') or '{}')
+            except Exception:
+                municipios = {}
+            try:
+                sectores = json.loads(row.get('Sectores_Por_Municipio','{}') or '{}')
+            except Exception:
+                sectores = {}
+            respuestas.append({
+                'nombre':        row.get('Nombre','').strip(),
+                'org':           row.get('Organización','').strip(),
+                'colaboradoras': colabs,
+                'departamentos': deptos,
+                'municipios':    municipios,
+                'sectores':      sectores,
+            })
+    return respuestas
+
+
+def red_to_js(respuestas):
+    lines = []
+    for r in respuestas:
+        props = [
+            f"nombre:{j(r['nombre'])}",
+            f"org:{j(r['org'])}",
+            f"colaboradoras:{j(r['colaboradoras'])}",
+            f"departamentos:{j(r['departamentos'])}",
+            f"municipios:{j(r['municipios'])}",
+            f"sectores:{j(r['sectores'])}",
+        ]
+        lines.append("    {" + ",".join(props) + "}")
+    return "{\n  respuestas: [\n" + ",\n".join(lines) + "\n  ]\n}"
+
+
 # ─── reemplazo en index.html ─────────────────────────────────────────────────
 # Patrón: "const NOMBRE = [" hasta el "
 # ];" en su propia línea (no greedy).
 
 def replace_const(content, name, js_value):
-    pattern = r'(const ' + re.escape(name) + r' = )\[[\s\S]*?\n\];'
-    # Usar lambda como reemplazador: re.sub NO procesa \n, \t, etc. en el
-    # valor devuelto por una función, evitando que los escapes JSON se
-    # conviertan en saltos de línea reales.
+    # Handles both array  const X = [...\n];
+    # and       object    const X = {...\n};
+    pattern  = r'const ' + re.escape(name) + r' = [\[{][\s\S]*?\n[}\]];'
     new_text = f'const {name} = {js_value};'
     new_content, n = re.subn(pattern, lambda m: new_text, content, count=1)
     if n == 0:
@@ -169,7 +212,7 @@ def replace_const(content, name, js_value):
     return new_content
 
 
-def update_html(padb_rows, orgs, personas):
+def update_html(padb_rows, orgs, personas, respuestas):
     with open(HTML_FILE, 'r', encoding='utf-8') as f:
         content = f.read()
 
@@ -177,6 +220,7 @@ def update_html(padb_rows, orgs, personas):
     content  = replace_const(content, 'DEFAULT_DATA',  padb_to_js(padb_rows))
     content  = replace_const(content, 'ORGS_DATA',     orgs_to_js(orgs))
     content  = replace_const(content, 'PERSONAS_DATA', personas_to_js(personas))
+    content  = replace_const(content, 'RED_DATA',      red_to_js(respuestas))
 
     if content == original:
         print("  ℹ️  index.html no cambió (datos idénticos).")
@@ -188,7 +232,8 @@ def update_html(padb_rows, orgs, personas):
     print("  ✅ index.html actualizado.")
     print(f"     {len(padb_rows)} acciones PADB  |  "
           f"{len(orgs)} organizaciones  |  "
-          f"{len(personas)} personas")
+          f"{len(personas)} personas  |  "
+          f"{len(respuestas)} respuestas red")
 
 
 # ─── main ────────────────────────────────────────────────────────────────────
@@ -218,9 +263,22 @@ if __name__ == '__main__':
     except Exception as e:
         print(f"  ❌  {e}"); ok = False; orgs = []; personas = []
 
+    print("📖  raw/resultados_red.csv ...")
+    try:
+        respuestas = read_red_csv()
+        print(f"  ✓  {len(respuestas)} respuestas")
+    except FileNotFoundError:
+        print(f"  ⚠️  No encontrado: {RED_CSV} — RED_DATA no se actualizará.")
+        respuestas = None
+    except Exception as e:
+        print(f"  ❌  {e}"); ok = False; respuestas = None
+
     if not ok:
         print("\n❌  Abortado."); sys.exit(1)
 
+    if respuestas is None:
+        respuestas = []   # skip RED_DATA update gracefully
+
     print("\n✍️   Actualizando index.html ...")
-    update_html(padb_rows, orgs, personas)
+    update_html(padb_rows, orgs, personas, respuestas)
     print("\n🎉  Listo. Recarga el navegador para ver los cambios.")
