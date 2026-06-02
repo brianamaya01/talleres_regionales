@@ -320,14 +320,58 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 .nm-val{text-align:center;color:var(--muted)}
 .nm-total{text-align:center;font-weight:700;color:var(--g)}
 
-/* geo section */
-.red-geo-stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-.rgs-chip{display:flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:.88rem;font-weight:700;color:var(--text)}
-.rgs-chip span{font-size:.68rem;font-weight:500;color:var(--muted)}
-.red-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.red-chart-box{background:#0f3d36;border-radius:12px;padding:20px;border:1px solid rgba(159,211,199,.15)}
-.red-chart-title{font-size:.76rem;font-weight:700;color:rgba(255,255,255,.8);margin-bottom:12px;text-align:center;letter-spacing:.04em;text-transform:uppercase}
-.red-chart-canvas-wrap{position:relative;height:280px}
+/* section header rows with expand */
+.red-section-hd-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.expand-btn{display:flex;align-items:center;gap:5px;background:var(--g-pale);border:1px solid var(--g-border);color:var(--g);border-radius:7px;padding:5px 12px;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .15s}
+.expand-btn:hover{background:var(--g);color:#fff}
+
+/* filter buttons */
+.red-filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-bottom:14px;padding:10px 14px;background:#fff;border-radius:10px;border:1px solid var(--border)}
+.rfb-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);flex-shrink:0}
+.rfb-btn{padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:.75rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+.rfb-btn:hover{border-color:var(--g);color:var(--g)}
+.rfb-btn.rfb-active{color:#fff;border-color:transparent}
+.rfb-btn[data-s="all"].rfb-active{background:var(--g)}
+.rfb-btn[data-s="Biotecnología"].rfb-active{background:#3b82f6}
+.rfb-btn[data-s="Residuos"].rfb-active{background:#ef4444}
+.rfb-btn[data-s="Agricultura"].rfb-active{background:#22c55e;color:#0f172a}
+.rfb-btn[data-s="Forestal"].rfb-active{background:#92400e}
+.rfb-btn[data-s="Energía"].rfb-active{background:#f59e0b;color:#0f172a}
+.rfb-btn[data-s="Transversal"].rfb-active{background:#8b5cf6}
+
+/* choropleth map + stats */
+.red-map-grid{display:grid;grid-template-columns:1fr 210px;gap:14px;align-items:start}
+.red-map-container{position:relative;background:#071a17;border-radius:12px;overflow:hidden;border:1px solid rgba(159,211,199,.2)}
+#choropleth-svg,#expand-choropleth-svg{display:block;width:100%;cursor:grab}
+#choropleth-svg:active,#expand-choropleth-svg:active{cursor:grabbing}
+#map-tooltip,#expand-map-tooltip{position:absolute;background:#0f172a;color:#e2e8f0;border:1px solid rgba(159,211,199,.3);border-radius:9px;padding:10px 13px;font-size:.78rem;pointer-events:none;display:none;z-index:20;max-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.45);line-height:1.55}
+.map-leg{display:flex;flex-wrap:wrap;gap:9px;padding:9px 14px;background:rgba(255,255,255,.04);border-top:1px solid rgba(159,211,199,.1)}
+.map-leg-item{display:flex;align-items:center;gap:4px;font-size:.68rem;color:rgba(255,255,255,.65)}
+.map-leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* stats panel */
+.red-map-stats{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.rms-head{padding:10px 12px;background:var(--g);color:#fff;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.rms-body{padding:10px 12px;display:flex;flex-direction:column;gap:5px;max-height:380px;overflow-y:auto}
+.rms-dept-name{font-size:.75rem;font-weight:700;color:var(--g);margin-top:6px;padding-bottom:3px;border-bottom:1px solid var(--border)}
+.rms-dept-name:first-child{margin-top:0}
+.rms-mun{display:flex;align-items:center;gap:6px;font-size:.72rem;padding:2px 0}
+.rms-mun-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* expand overlay */
+.expand-overlay{display:none;position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:12px}
+.expand-overlay.open{display:flex}
+.expand-box{background:#0f3d36;border-radius:14px;width:min(98vw,1500px);height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.expand-hdr{display:flex;align-items:center;gap:12px;padding:12px 18px;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(159,211,199,.12);flex-shrink:0}
+.expand-hdr-title{font-size:.92rem;font-weight:700;color:#fff;flex:1}
+.expand-filter-row{padding:8px 16px;background:rgba(0,0,0,.15);display:flex;flex-wrap:wrap;gap:7px;flex-shrink:0;border-bottom:1px solid rgba(159,211,199,.08)}
+.expand-close-btn{background:rgba(220,38,38,.22);border:1px solid rgba(220,38,38,.4);color:#fca5a5;border-radius:8px;padding:6px 14px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s}
+.expand-close-btn:hover{background:rgba(220,38,38,.5);color:#fff}
+.expand-body{flex:1;position:relative;overflow:hidden;min-height:0;background:#071a17}
+/* net-metrics inside expand */
+.expand-net-grid{display:grid;grid-template-columns:1fr 250px;height:100%;overflow:hidden}
+.expand-net-svg-wrap{position:relative;overflow:hidden;height:100%}
+.expand-metrics-wrap{overflow-y:auto;background:#fff;height:100%}
 
 /* plan section responsive — merged below with actores/pres */
 
@@ -592,8 +636,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 /* red section responsive */
 @media(max-width:900px){
   .red-net-grid{grid-template-columns:1fr}
-  .red-charts-grid{grid-template-columns:1fr}
+  .red-map-grid{grid-template-columns:1fr}
   .red-content{padding:16px}
+  .expand-net-grid{grid-template-columns:1fr}
 }
 /* plan + actores responsive */
 @media(max-width:860px){
@@ -768,10 +813,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 
     <!-- ── NETWORK ── -->
     <div>
-      <div class="red-section-hd">🔗 Red de colaboración interorganizacional</div>
+      <div class="red-section-hd-row">
+        <span class="red-section-hd">🔗 Red de colaboración interorganizacional</span>
+        <button class="expand-btn" onclick="expandSection('network')">⤢ Expandir</button>
+      </div>
       <div class="red-net-grid">
-
-        <!-- SVG panel -->
         <div class="net-svg-container">
           <svg id="network-svg" width="100%" height="500"></svg>
           <div id="net-tooltip"></div>
@@ -779,41 +825,77 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
             <div class="nl-item"><div class="nl-dot" style="background:#4ade80"></div>Org. participante</div>
             <div class="nl-item"><div class="nl-dot" style="background:#7dd3fc"></div>Entidad colaboradora</div>
             <div class="nl-item"><div class="nl-dot" style="background:#fbbf24"></div>Ambas</div>
-            <div class="nl-item" style="color:rgba(255,255,255,.35);font-size:.67rem;margin-left:auto">Arrastra · Rueda para zoom</div>
+            <div class="nl-item" style="color:rgba(255,255,255,.35);font-size:.67rem;margin-left:auto">Arrastra · Scroll zoom</div>
           </div>
         </div>
-
-        <!-- Metrics table -->
         <div class="net-metrics">
           <div class="nm-head-box">
             <div class="nm-title">📊 Métricas de grado</div>
-            <div class="nm-sub">Hover en el grafo para resaltar</div>
+            <div class="nm-sub">Hover para resaltar</div>
           </div>
           <div class="nm-col-hd">
             <span>Nodo</span><span style="text-align:center">↓ In</span><span style="text-align:center">↑ Out</span><span style="text-align:center">∑</span>
           </div>
           <div class="nm-scroll" id="net-metrics-body"></div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── GEO ── -->
+    <!-- ── CHOROPLETH MAP ── -->
     <div>
-      <div class="red-section-hd">📍 Distribución territorial de proyectos de bioeconomía</div>
-      <div class="red-geo-stats" id="red-geo-stats"></div>
-      <div class="red-charts-grid">
-        <div class="red-chart-box">
-          <div class="red-chart-title">Municipios por departamento · Sector</div>
-          <div class="red-chart-canvas-wrap"><canvas id="geo-bar-chart"></canvas></div>
+      <div class="red-section-hd-row">
+        <span class="red-section-hd">📍 Distribución territorial — Eje Cafetero</span>
+        <button class="expand-btn" onclick="expandSection('map')">⤢ Expandir</button>
+      </div>
+      <!-- Filter buttons -->
+      <div class="red-filter-bar" id="map-filter-bar">
+        <span class="rfb-label">Sector:</span>
+        <button class="rfb-btn rfb-active" data-s="all" onclick="setMapFilter(null,this)">Todos</button>
+        <button class="rfb-btn" data-s="Biotecnología" onclick="setMapFilter('Biotecnología',this)">🔬 Biotecnología</button>
+        <button class="rfb-btn" data-s="Residuos" onclick="setMapFilter('Residuos',this)">♻️ Residuos</button>
+        <button class="rfb-btn" data-s="Agricultura" onclick="setMapFilter('Agricultura',this)">🌾 Agricultura</button>
+        <button class="rfb-btn" data-s="Forestal" onclick="setMapFilter('Forestal',this)">🌲 Forestal</button>
+        <button class="rfb-btn" data-s="Energía" onclick="setMapFilter('Energía',this)">⚡ Energía</button>
+        <button class="rfb-btn" data-s="Transversal" onclick="setMapFilter('Transversal',this)">🔄 Transversal</button>
+      </div>
+      <!-- Map grid: SVG + stats -->
+      <div class="red-map-grid">
+        <div class="red-map-container">
+          <svg id="choropleth-svg" width="100%" height="480"></svg>
+          <div id="map-tooltip"></div>
+          <div class="map-leg" id="map-legend"></div>
         </div>
-        <div class="red-chart-box">
-          <div class="red-chart-title">Distribución por sector bioconómico</div>
-          <div class="red-chart-canvas-wrap"><canvas id="sector-donut-chart"></canvas></div>
+        <div class="red-map-stats">
+          <div class="rms-head">Municipios activos</div>
+          <div class="rms-body" id="red-map-stats-body"></div>
         </div>
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══ EXPAND OVERLAY ═══ -->
+<div class="expand-overlay" id="expand-overlay">
+  <div class="expand-box">
+    <div class="expand-hdr">
+      <span class="expand-hdr-title" id="expand-title"></span>
+      <button class="expand-close-btn" onclick="closeExpand()">✕ Cerrar</button>
+    </div>
+    <!-- filter bar — solo para mapa -->
+    <div class="expand-filter-row" id="expand-filter-row" style="display:none">
+      <span class="rfb-label" style="color:rgba(255,255,255,.5)">Sector:</span>
+      <button class="rfb-btn rfb-active" data-s="all" onclick="setMapFilter(null,this,true)">Todos</button>
+      <button class="rfb-btn" data-s="Biotecnología" onclick="setMapFilter('Biotecnología',this,true)">🔬 Biotecnología</button>
+      <button class="rfb-btn" data-s="Residuos" onclick="setMapFilter('Residuos',this,true)">♻️ Residuos</button>
+      <button class="rfb-btn" data-s="Agricultura" onclick="setMapFilter('Agricultura',this,true)">🌾 Agricultura</button>
+      <button class="rfb-btn" data-s="Forestal" onclick="setMapFilter('Forestal',this,true)">🌲 Forestal</button>
+      <button class="rfb-btn" data-s="Energía" onclick="setMapFilter('Energía',this,true)">⚡ Energía</button>
+      <button class="rfb-btn" data-s="Transversal" onclick="setMapFilter('Transversal',this,true)">🔄 Transversal</button>
+    </div>
+    <div class="expand-body" id="expand-body">
+      <!-- rendered by JS -->
+    </div>
   </div>
 </div>
 
@@ -1880,6 +1962,9 @@ function presTogglePlay(){
 let redBuilt = false;
 let _netSim = null, _netZoom = null, _netSvg = null;
 let _geoCharts = [];
+let _cachedNodes = null, _cachedLinks = null, _cachedGeo = null;
+let _mapFilter = null;
+let _expandType = null;
 
 // ── data processing ──────────────────────────────────────────────────────────
 function processRedData(){
@@ -1927,15 +2012,15 @@ function processRedData(){
 // ── build section ─────────────────────────────────────────────────────────────
 function buildRedSection(){
   const {nodes, links, geo} = processRedData();
-  // stats bar
+  _cachedNodes = nodes; _cachedLinks = links; _cachedGeo = geo;
   const nSrc = nodes.filter(n=>n.isSource).length;
   const nDeptos = Object.keys(geo).length;
   const nMuns = Object.values(geo).reduce((a,d)=>a+Object.keys(d).length, 0);
   document.getElementById('red-stats').textContent =
-    `${nSrc} organizaciones participantes · ${links.length} colaboraciones únicas · ${nDeptos} departamentos · ${nMuns} municipios`;
+    `${nSrc} organizaciones · ${links.length} colaboraciones únicas · ${nDeptos} departamentos · ${nMuns} municipios`;
   renderMetricsTable(nodes);
   initNetworkViz(nodes, links);
-  initGeoCharts(geo);
+  initChoroplethMap('choropleth-svg','map-tooltip','red-map-stats-body','map-legend', false);
 }
 
 // ── metrics table ─────────────────────────────────────────────────────────────
@@ -2097,14 +2182,357 @@ function highlightFromTable(nodeId){
   });
 }
 
-// ── Chart.js geo charts ───────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
+// EJE CAFETERO GEOJSON (4 departments, 3dp)
+// ═══════════════════════════════════════════
+const EJE_GEOJSON_SRC = 'raw/eje_cafetero.geojson';
+
+// Municipality approximate coordinates [lat, lng]
+const MUN_COORDS = {
+  "Manizales":[5.0703,-75.5138],"Aguadas":[5.6144,-75.4578],"Anserma":[5.2289,-75.7825],
+  "Chinchiná":[4.9827,-75.6023],"La Dorada":[5.4549,-74.6641],
+  "Medellín":[6.2442,-75.5812],"Caracolí":[6.4386,-74.5981],"Gómez Plata":[6.6411,-75.1889],
+  "La Estrella":[6.1551,-75.6439],"La Pintada":[5.7484,-75.5942],"Alejandría":[6.3667,-75.0667],
+  "Abejorral":[5.7942,-75.4262],"Barbosa":[6.4411,-75.3333],"Argelia":[5.7497,-75.9267],
+  "Arboletes":[8.6944,-76.4306],
+  "Pereira":[4.8133,-75.6961],"Belén de Umbría":[5.2077,-75.8786],"Apía":[5.1153,-75.9700],
+  "Balboa":[5.0111,-75.9522],"La Virginia":[4.8983,-75.8800],"La Celia":[5.0831,-75.9947],
+  "Guática":[5.3338,-75.8386],"Quinchía":[5.3544,-75.7283],"Pueblo Rico":[5.2367,-76.0403],
+  "Santuario":[5.0808,-75.9739],
+  "Calarcá":[4.5381,-75.6472],"Armenia":[4.5339,-75.6811],
+  // "Todos los municipios" → dept centroid
+  "_todos_Risaralda":[5.16,-75.93],"_todos_Antioquia":[6.8,-75.5]
+};
+
+// ── Sector colors (shared) ────────────────────────────────────────────────────
 const SECTOR_COLORS = {
   'Biotecnología':'#3b82f6','Residuos':'#ef4444','Agricultura':'#22c55e',
   'Forestal':'#92400e','Energía':'#f59e0b','Transversal':'#8b5cf6','Sin sector':'#6b7280'
 };
 
+// ── D3 Choropleth map ────────────────────────────────────────────────────────
+let _ejegeo = null; // cached GeoJSON
+
+function initChoroplethMap(svgId, tipId, statsPanelId, legendId, isExpand){
+  const geo = _cachedGeo;
+  if(!geo) return;
+
+  // Load GeoJSON once then render
+  if(_ejegeo){ _renderChoropleth(svgId, tipId, statsPanelId, legendId, isExpand); return; }
+  fetch(EJE_GEOJSON_SRC)
+    .then(r=>r.json())
+    .then(data=>{ _ejegeo=data; _renderChoropleth(svgId, tipId, statsPanelId, legendId, isExpand); })
+    .catch(()=>{ console.warn('GeoJSON fetch failed (local file?). Trying embedded...'); });
+}
+
+function _renderChoropleth(svgId, tipId, statsPanelId, legendId, isExpand){
+  const geo  = _cachedGeo;
+  const gj   = _ejegeo;
+  const svgEl = document.getElementById(svgId);
+  if(!svgEl) return;
+
+  const W = svgEl.parentElement.clientWidth  || 600;
+  const H = svgEl.parentElement.clientHeight || (isExpand ? 600 : 480);
+  svgEl.setAttribute('width',  W);
+  svgEl.setAttribute('height', H);
+
+  // Build municipality data points
+  const munPts = [];
+  Object.entries(geo).forEach(([depto, munis]) => {
+    Object.entries(munis).forEach(([mun, sectors]) => {
+      const coordKey = mun === 'Todos los municipios' ? `_todos_${depto}` : mun;
+      const coord = MUN_COORDS[coordKey];
+      sectors.forEach(sector => {
+        munPts.push({
+          mun: mun === 'Todos los municipios' ? `${depto} (todos)` : mun,
+          depto, sector, coord,
+          isTodos: mun === 'Todos los municipios'
+        });
+      });
+    });
+  });
+
+  // Count municipalities per dept for choropleth intensity
+  const deptCount = {};
+  Object.entries(geo).forEach(([d,m]) => deptCount[d] = Object.keys(m).length);
+  const maxCount = Math.max(...Object.values(deptCount), 1);
+
+  const svg = d3.select('#'+svgId);
+  svg.selectAll('*').remove();
+
+  const proj = d3.geoMercator().fitExtent([[20,20],[W-20,H-20]], gj);
+  const path = d3.geoPath().projection(proj);
+
+  const deptFill = d3.scaleLinear()
+    .domain([0, maxCount])
+    .range(['rgba(159,211,199,.1)', 'rgba(74,222,128,.4)']);
+
+  // Zoom
+  const zoomBeh = d3.zoom().scaleExtent([0.8, 12])
+    .on('zoom', e => g.attr('transform', e.transform));
+  svg.call(zoomBeh);
+
+  const g = svg.append('g');
+
+  // Dept fills
+  g.append('g').selectAll('path').data(gj.features).join('path')
+    .attr('d', path)
+    .attr('fill', d => deptFill(deptCount[d.properties.name]||0))
+    .attr('stroke', 'rgba(74,222,128,.5)')
+    .attr('stroke-width', 1.2)
+    .on('mouseenter', (e,d) => {
+      const muns = geo[d.properties.name] || {};
+      const munNames = Object.keys(muns).slice(0,6).join(', ') + (Object.keys(muns).length>6?'…':'');
+      _showMapTip(tipId, svgId, e, `<b>${d.properties.name}</b><br>${Object.keys(muns).length} municipios<br><small style="opacity:.7">${munNames}</small>`);
+      d3.select(e.target).attr('stroke-width', 2.5).attr('stroke','rgba(74,222,128,.9)');
+    })
+    .on('mousemove', (e) => _moveMapTip(tipId, svgId, e))
+    .on('mouseleave', (e) => { _hideMapTip(tipId); d3.select(e.target).attr('stroke-width',1.2).attr('stroke','rgba(74,222,128,.5)'); });
+
+  // Dept name labels
+  g.append('g').selectAll('text').data(gj.features).join('text')
+    .attr('transform', d => `translate(${path.centroid(d)})`)
+    .attr('text-anchor','middle').attr('dy','0.35em')
+    .attr('font-size', isExpand ? 13 : 10).attr('font-weight','600')
+    .attr('fill','rgba(255,255,255,.75)').attr('pointer-events','none')
+    .text(d => d.properties.name);
+
+  // Municipality dots
+  const dotG = g.append('g').attr('class','mun-dot-layer');
+  dotG.selectAll('circle').data(munPts.filter(p=>p.coord)).join('circle')
+    .attr('cx', d => proj([d.coord[1], d.coord[0]])[0])
+    .attr('cy', d => proj([d.coord[1], d.coord[0]])[1])
+    .attr('r',  d => isExpand ? (d.isTodos?13:9) : (d.isTodos?10:7))
+    .attr('fill', d => SECTOR_COLORS[d.sector]||'#888')
+    .attr('fill-opacity', 0.88)
+    .attr('stroke','#071a17').attr('stroke-width', 1.5)
+    .attr('class', d => `mun-dot ${isExpand?'exp-':''}mun-dot-${CSS.escape(d.sector)}`)
+    .style('cursor','pointer')
+    .on('mouseenter', (e,d) => {
+      d3.select(e.target).attr('r', isExpand?(d.isTodos?17:13):(d.isTodos?14:11)).attr('stroke','#fff').attr('stroke-width',2.5);
+      _showMapTip(tipId, svgId, e, `<b>${d.mun}</b><br><span style="color:rgba(255,255,255,.6)">${d.depto}</span><br><span style="color:${SECTOR_COLORS[d.sector]}">● ${d.sector}</span>`);
+    })
+    .on('mousemove', (e) => _moveMapTip(tipId, svgId, e))
+    .on('mouseleave', (e,d) => {
+      d3.select(e.target).attr('r', isExpand?(d.isTodos?13:9):(d.isTodos?10:7)).attr('stroke','#071a17').attr('stroke-width',1.5);
+      _hideMapTip(tipId);
+    });
+
+  // Build stats panel + legend (only for inline, not expand copy)
+  if(statsPanelId) _buildMapStats(statsPanelId, geo);
+  if(legendId) _buildMapLegend(legendId, munPts, isExpand);
+}
+
+function _showMapTip(tipId, svgId, e, html){
+  const tip = document.getElementById(tipId); if(!tip) return;
+  tip.innerHTML = html; tip.style.display='block';
+  _moveMapTip(tipId, svgId, e);
+}
+function _moveMapTip(tipId, svgId, e){
+  const tip = document.getElementById(tipId); if(!tip) return;
+  const rect = document.getElementById(svgId).getBoundingClientRect();
+  let x = e.clientX - rect.left + 14;
+  let y = e.clientY - rect.top  - 14;
+  if(x + 230 > rect.width)  x -= 250;
+  if(y + 130 > rect.height) y -= 140;
+  tip.style.left = Math.max(4, x)+'px';
+  tip.style.top  = Math.max(4, y)+'px';
+}
+function _hideMapTip(tipId){ const t=document.getElementById(tipId); if(t) t.style.display='none'; }
+
+function _buildMapStats(containerId, geo){
+  const el = document.getElementById(containerId); if(!el) return;
+  let html = '';
+  Object.entries(geo).forEach(([depto, munis]) => {
+    html += `<div class="rms-dept-name">${depto} (${Object.keys(munis).length})</div>`;
+    Object.entries(munis).forEach(([mun, sectors]) => {
+      const firstSec = [...sectors][0];
+      const color = SECTOR_COLORS[firstSec]||'#888';
+      html += `<div class="rms-mun"><div class="rms-mun-dot" style="background:${color}"></div>${mun}</div>`;
+    });
+  });
+  el.innerHTML = html;
+}
+
+function _buildMapLegend(containerId, munPts, isExpand){
+  const sectors = [...new Set(munPts.map(p=>p.sector))];
+  const el = document.getElementById(containerId); if(!el) return;
+  el.innerHTML = sectors.map(s=>
+    `<div class="map-leg-item"><div class="map-leg-dot" style="background:${SECTOR_COLORS[s]||'#888'}"></div>${s}</div>`
+  ).join('') + `<div class="map-leg-item" style="margin-left:auto;opacity:.45;font-size:.63rem">Scroll → zoom · Arrastra → pan</div>`;
+}
+
+// ── Map filter ────────────────────────────────────────────────────────────────
+function setMapFilter(sector, btn, isExpand){
+  _mapFilter = sector;
+  // sync both filter bars
+  const scope = isExpand ? '.expand-filter-row' : '#map-filter-bar';
+  document.querySelectorAll(scope+' .rfb-btn').forEach(b => b.classList.remove('rfb-active'));
+  btn.classList.add('rfb-active');
+
+  // If expand is open, sync the other bar too
+  const otherScope = isExpand ? '#map-filter-bar' : '.expand-filter-row';
+  document.querySelectorAll(otherScope+' .rfb-btn').forEach(b => {
+    b.classList.toggle('rfb-active', (b.dataset.s==='all' && !sector) || b.dataset.s===sector);
+  });
+
+  // Update dots opacity on both SVGs
+  ['choropleth-svg','expand-choropleth-svg'].forEach(svgId => {
+    d3.select('#'+svgId).selectAll('.mun-dot').style('opacity', d => {
+      if(!sector) return 0.88;
+      return d && d.sector === sector ? 0.95 : 0.07;
+    });
+  });
+}
+
+// ── Expand popup ──────────────────────────────────────────────────────────────
+function expandSection(type){
+  _expandType = type;
+  document.getElementById('expand-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('expand-title').textContent =
+    type==='network' ? '🔗 Red de colaboración interorganizacional'
+                     : '📍 Distribución territorial — Eje Cafetero';
+  document.getElementById('expand-filter-row').style.display = type==='map' ? '' : 'none';
+
+  const body = document.getElementById('expand-body');
+  body.innerHTML = '';  // clear previous
+
+  setTimeout(()=>{
+    if(type==='network'){
+      // Build network + metrics side by side at full size
+      body.innerHTML = `<div class="expand-net-grid">
+        <div class="expand-net-svg-wrap" style="position:relative">
+          <svg id="expand-net-svg" width="100%" height="100%"></svg>
+          <div id="expand-net-tooltip" style="position:absolute;display:none;background:#0f172a;color:#e2e8f0;border:1px solid rgba(159,211,199,.35);border-radius:9px;padding:10px 13px;font-size:.78rem;pointer-events:none;z-index:20;max-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.45);line-height:1.55"></div>
+        </div>
+        <div class="expand-metrics-wrap">
+          <div class="nm-head-box" style="background:var(--g)"><div class="nm-title">📊 Métricas de grado</div></div>
+          <div class="nm-col-hd"><span>Nodo</span><span style="text-align:center">↓ In</span><span style="text-align:center">↑ Out</span><span style="text-align:center">∑</span></div>
+          <div id="expand-metrics-body"></div>
+        </div>
+      </div>`;
+      renderMetricsTable(_cachedNodes, 'expand-metrics-body');
+      const bW = body.querySelector('.expand-net-svg-wrap').clientWidth;
+      const bH = body.clientHeight;
+      _renderNetworkIn('expand-net-svg', 'expand-net-tooltip', bW, bH);
+
+    } else {
+      // Map full screen
+      body.innerHTML = `<div style="position:relative;width:100%;height:100%">
+        <svg id="expand-choropleth-svg" width="100%" height="100%"></svg>
+        <div id="expand-map-tooltip" style="position:absolute;display:none;background:#0f172a;color:#e2e8f0;border:1px solid rgba(159,211,199,.35);border-radius:9px;padding:10px 13px;font-size:.78rem;pointer-events:none;z-index:20;max-width:220px;box-shadow:0 8px 24px rgba(0,0,0,.45);line-height:1.55"></div>
+        <div class="map-leg" id="expand-map-legend" style="position:absolute;bottom:0;left:0;right:0;background:rgba(7,26,23,.85)"></div>
+      </div>`;
+      initChoroplethMap('expand-choropleth-svg','expand-map-tooltip', null, 'expand-map-legend', true);
+      // sync filter state
+      if(_mapFilter){
+        document.querySelectorAll('.expand-filter-row .rfb-btn').forEach(b=>
+          b.classList.toggle('rfb-active',(b.dataset.s===_mapFilter)));
+      }
+    }
+  }, 60);
+}
+
+function closeExpand(){
+  document.getElementById('expand-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  _expandType = null;
+}
+
+// Helper: render network into any SVG element (for expand)
+function _renderNetworkIn(svgId, tipId, W, H){
+  const nodes = _cachedNodes.map(n=>({...n}));
+  const links = _cachedLinks.map(l=>({...l}));
+  const nodeR = n=>Math.max(9,Math.min(30,n.total*3.5+9));
+  const nodeColor = n=>n.isSource&&n.indegree>0?'#fbbf24':n.isSource?'#4ade80':'#7dd3fc';
+
+  const svgEl = document.getElementById(svgId);
+  svgEl.setAttribute('width',W); svgEl.setAttribute('height',H);
+  const svg = d3.select('#'+svgId);
+  svg.selectAll('*').remove();
+
+  svg.append('defs').append('marker')
+    .attr('id','exp-net-arrow').attr('viewBox','0 -4 8 8')
+    .attr('refX',2).attr('refY',0).attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto')
+    .append('path').attr('d','M0,-4L8,0L0,4').attr('fill','rgba(159,211,199,.5)');
+
+  const zoom = d3.zoom().scaleExtent([0.15,6]).on('zoom',e=>g.attr('transform',e.transform));
+  svg.call(zoom);
+  const g = svg.append('g');
+
+  const sim = d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(d=>120+(d.source.total||0)*5))
+    .force('charge',d3.forceManyBody().strength(-400))
+    .force('center',d3.forceCenter(W/2,H/2))
+    .force('collide',d3.forceCollide(n=>nodeR(n)+12));
+
+  const link = g.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke','rgba(159,211,199,.3)').attr('stroke-width',1.5)
+    .attr('marker-end','url(#exp-net-arrow)');
+
+  const nodeG = g.append('g').selectAll('g').data(nodes).join('g')
+    .style('cursor','pointer')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)sim.alphaTarget(0.3).restart();d.fx=d.x;d.fy=d.y;})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y;})
+      .on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+
+  nodeG.append('circle').attr('r',d=>nodeR(d)).attr('fill',d=>nodeColor(d))
+    .attr('fill-opacity',.9).attr('stroke','#071a17').attr('stroke-width',2.5);
+
+  nodeG.append('text').text(d=>d.id.length>22?d.id.slice(0,20)+'…':d.id)
+    .attr('text-anchor','middle').attr('dy',d=>nodeR(d)+15)
+    .attr('font-size',11).attr('fill','rgba(255,255,255,.8)').attr('pointer-events','none');
+
+  const tip=document.getElementById(tipId);
+  nodeG.on('mouseenter',(e,d)=>{
+    tip.style.display='block';
+    tip.innerHTML=`<div style="font-weight:700;font-size:.88rem;color:#fff;margin-bottom:4px">${esc(d.id)}</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:8px">${d.isSource&&d.indegree>0?'🟡 Participante y colaboradora':d.isSource?'🟢 Org. participante':'🔵 Entidad colaboradora'}</div>
+      <div style="display:flex;justify-content:space-between;font-size:.74rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span>Indegree</span><b style="color:#4ade80">${d.indegree}</b></div>
+      <div style="display:flex;justify-content:space-between;font-size:.74rem;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span>Outdegree</span><b style="color:#4ade80">${d.outdegree}</b></div>
+      <div style="display:flex;justify-content:space-between;font-size:.74rem;padding:2px 0"><span>Total</span><b style="color:#4ade80">${d.total}</b></div>`;
+    const rect=document.getElementById(svgId).getBoundingClientRect();
+    let x=e.clientX-rect.left+14, y=e.clientY-rect.top-14;
+    if(x+230>rect.width)x-=250; if(y+160>rect.height)y-=170;
+    tip.style.left=Math.max(4,x)+'px'; tip.style.top=Math.max(4,y)+'px';
+    const conn=new Set([d.id]);
+    links.forEach(l=>{if(l.source.id===d.id)conn.add(l.target.id);if(l.target.id===d.id)conn.add(l.source.id);});
+    nodeG.style('opacity',n=>conn.has(n.id)?1:.12);
+    link.style('opacity',l=>l.source.id===d.id||l.target.id===d.id?1:.05);
+  }).on('mousemove',e=>{
+    const rect=document.getElementById(svgId).getBoundingClientRect();
+    let x=e.clientX-rect.left+14, y=e.clientY-rect.top-14;
+    if(x+230>rect.width)x-=250; if(y+160>rect.height)y-=170;
+    tip.style.left=Math.max(4,x)+'px'; tip.style.top=Math.max(4,y)+'px';
+  }).on('mouseleave',()=>{
+    tip.style.display='none'; nodeG.style('opacity',1); link.style('opacity',1);
+  });
+
+  sim.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+        .attr('x2',d=>{const dx=d.target.x-d.source.x,dy=d.target.y-d.source.y,dist=Math.sqrt(dx*dx+dy*dy)||1;return d.target.x-(dx/dist)*nodeR(d.target);})
+        .attr('y2',d=>{const dx=d.target.x-d.source.x,dy=d.target.y-d.source.y,dist=Math.sqrt(dx*dx+dy*dy)||1;return d.target.y-(dy/dist)*nodeR(d.target);});
+    nodeG.attr('transform',d=>`translate(${d.x},${d.y})`);
+  });
+}
+
+// Overload renderMetricsTable to support expand target
+function renderMetricsTable(nodes, targetId){
+  const tid = targetId || 'net-metrics-body';
+  const sorted = [...nodes].sort((a,b)=>b.total-a.total);
+  document.getElementById(tid).innerHTML = sorted.map(n=>`
+    <div class="nm-row" data-nid="${esc(n.id)}">
+      <span class="nm-name" title="${esc(n.id)}">${esc(n.id.length>26?n.id.slice(0,24)+'…':n.id)}</span>
+      <span class="nm-val">${n.indegree}</span>
+      <span class="nm-val">${n.outdegree}</span>
+      <span class="nm-total">${n.total}</span>
+    </div>`).join('');
+}
+
+// ── dummy geo chart variables (no longer used but kept for compatibility) ─────
 function initGeoCharts(geo){
-  _geoCharts.forEach(c=>c.destroy()); _geoCharts=[];
 
   const deptos = Object.keys(geo);
   // collect all sectors
@@ -2211,7 +2639,8 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if(e.key==='Escape'){
-    if(document.getElementById('conf').classList.contains('open')) confCancel();
+    if(document.getElementById('expand-overlay').classList.contains('open')) closeExpand();
+    else if(document.getElementById('conf').classList.contains('open')) confCancel();
     else if(document.getElementById('org-modal').classList.contains('open')) closeOrgModal();
     else if(document.getElementById('modal').classList.contains('open')) closeModal();
     else if(document.getElementById('bw-panel').classList.contains('open')) closeBW();
