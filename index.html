@@ -2267,15 +2267,34 @@ function _renderChoropleth(svgId, tipId, statsPanelId, legendId, isExpand){
     .domain([0, maxCount])
     .range(['rgba(159,211,199,.1)', 'rgba(74,222,128,.4)']);
 
-  // Zoom
-  const zoomBeh = d3.zoom().scaleExtent([0.8, 12])
-    .on('zoom', e => g.attr('transform', e.transform));
+  // Radios base (en coordenadas SVG sin zoom)
+  const baseR    = isExpand ? 9  : 7;
+  const baseRTod = isExpand ? 13 : 10;
+  const hoverR   = isExpand ? 13 : 11;
+  const hoverRTod= isExpand ? 17 : 14;
+  let   currentK = 1;   // zoom level actual
+
+  // Zoom: contra-escalar puntos y strokes para que mantengan tamaño visual
+  const zoomBeh = d3.zoom().scaleExtent([0.8, 14])
+    .on('zoom', e => {
+      g.attr('transform', e.transform);
+      currentK = e.transform.k;
+      const k = currentK;
+      g.selectAll('.mun-dot')
+        .attr('r',            d => (d.isTodos ? baseRTod : baseR) / k)
+        .attr('stroke-width', 1.5 / k);
+      g.selectAll('.dept-path')
+        .attr('stroke-width', 1.2 / k);
+      g.selectAll('.dept-label')
+        .attr('font-size', (isExpand ? 13 : 10) / k);
+    });
   svg.call(zoomBeh);
 
   const g = svg.append('g');
 
-  // Dept fills
+  // Dept fills — clase .dept-path para poder rescalar strokes en zoom
   g.append('g').selectAll('path').data(gj.features).join('path')
+    .attr('class','dept-path')
     .attr('d', path)
     .attr('fill', d => deptFill(deptCount[d.properties.name]||0))
     .attr('stroke', 'rgba(74,222,128,.5)')
@@ -2284,37 +2303,48 @@ function _renderChoropleth(svgId, tipId, statsPanelId, legendId, isExpand){
       const muns = geo[d.properties.name] || {};
       const munNames = Object.keys(muns).slice(0,6).join(', ') + (Object.keys(muns).length>6?'…':'');
       _showMapTip(tipId, svgId, e, `<b>${d.properties.name}</b><br>${Object.keys(muns).length} municipios<br><small style="opacity:.7">${munNames}</small>`);
-      d3.select(e.target).attr('stroke-width', 2.5).attr('stroke','rgba(74,222,128,.9)');
+      d3.select(e.target).attr('stroke-width', 2.5/currentK).attr('stroke','rgba(74,222,128,.9)');
     })
     .on('mousemove', (e) => _moveMapTip(tipId, svgId, e))
-    .on('mouseleave', (e) => { _hideMapTip(tipId); d3.select(e.target).attr('stroke-width',1.2).attr('stroke','rgba(74,222,128,.5)'); });
+    .on('mouseleave', (e) => {
+      _hideMapTip(tipId);
+      d3.select(e.target).attr('stroke-width', 1.2/currentK).attr('stroke','rgba(74,222,128,.5)');
+    });
 
-  // Dept name labels
+  // Dept name labels — clase .dept-label para rescalar en zoom
   g.append('g').selectAll('text').data(gj.features).join('text')
+    .attr('class','dept-label')
     .attr('transform', d => `translate(${path.centroid(d)})`)
     .attr('text-anchor','middle').attr('dy','0.35em')
     .attr('font-size', isExpand ? 13 : 10).attr('font-weight','600')
     .attr('fill','rgba(255,255,255,.75)').attr('pointer-events','none')
     .text(d => d.properties.name);
 
-  // Municipality dots
+  // Municipality dots — radio se ajusta al nivel de zoom vía currentK
   const dotG = g.append('g').attr('class','mun-dot-layer');
   dotG.selectAll('circle').data(munPts.filter(p=>p.coord)).join('circle')
     .attr('cx', d => proj([d.coord[1], d.coord[0]])[0])
     .attr('cy', d => proj([d.coord[1], d.coord[0]])[1])
-    .attr('r',  d => isExpand ? (d.isTodos?13:9) : (d.isTodos?10:7))
+    .attr('r',  d => (d.isTodos ? baseRTod : baseR) / currentK)
     .attr('fill', d => SECTOR_COLORS[d.sector]||'#888')
     .attr('fill-opacity', 0.88)
-    .attr('stroke','#071a17').attr('stroke-width', 1.5)
+    .attr('stroke','#071a17').attr('stroke-width', 1.5 / currentK)
     .attr('class', d => `mun-dot ${isExpand?'exp-':''}mun-dot-${CSS.escape(d.sector)}`)
     .style('cursor','pointer')
     .on('mouseenter', (e,d) => {
-      d3.select(e.target).attr('r', isExpand?(d.isTodos?17:13):(d.isTodos?14:11)).attr('stroke','#fff').attr('stroke-width',2.5);
-      _showMapTip(tipId, svgId, e, `<b>${d.mun}</b><br><span style="color:rgba(255,255,255,.6)">${d.depto}</span><br><span style="color:${SECTOR_COLORS[d.sector]}">● ${d.sector}</span>`);
+      const k = currentK;
+      d3.select(e.target)
+        .attr('r', (d.isTodos ? hoverRTod : hoverR) / k)
+        .attr('stroke','#fff').attr('stroke-width', 2.5/k);
+      _showMapTip(tipId, svgId, e,
+        `<b>${d.mun}</b><br><span style="color:rgba(255,255,255,.6)">${d.depto}</span><br><span style="color:${SECTOR_COLORS[d.sector]}">● ${d.sector}</span>`);
     })
     .on('mousemove', (e) => _moveMapTip(tipId, svgId, e))
     .on('mouseleave', (e,d) => {
-      d3.select(e.target).attr('r', isExpand?(d.isTodos?13:9):(d.isTodos?10:7)).attr('stroke','#071a17').attr('stroke-width',1.5);
+      const k = currentK;
+      d3.select(e.target)
+        .attr('r', (d.isTodos ? baseRTod : baseR) / k)
+        .attr('stroke','#071a17').attr('stroke-width', 1.5/k);
       _hideMapTip(tipId);
     });
 
