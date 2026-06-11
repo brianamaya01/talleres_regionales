@@ -26,5 +26,3 @@ raw/data_new.json
 # Archivos comprimidos de trabajo
 raw/org.zip
 
-# PDFs grandes (>100MB — limite GitHub)
-raw/presentaciones/eje_cafetero_antioquia/PROVINCIA CARTAMA.pdf
