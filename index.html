@@ -410,6 +410,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 .pv-open-link:hover{text-decoration:underline}
 #pdf-iframe{flex:1;border:none;width:100%;min-height:0}
 
+/* ── PDF presentation overlay ── */
+.pdf-pres-overlay{display:none;position:fixed;inset:0;z-index:3100;background:#071a17;flex-direction:column}
+.pdf-pres-overlay.open{display:flex}
+.pdf-pres-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;background:rgba(0,0,0,.45);border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.pdf-pres-info{display:flex;flex-direction:column;gap:3px}
+.pdf-pres-org{font-size:clamp(.9rem,1.8vw,1.15rem);font-weight:800;color:#fff;line-height:1.2}
+.pdf-pres-presenter{font-size:clamp(.75rem,1.2vw,.9rem);color:#9fd3c7}
+.pdf-pres-counter{font-size:.8rem;color:rgba(255,255,255,.35);white-space:nowrap}
+.pdf-pres-iframe{flex:1;border:none;width:100%;min-height:0;background:#fff}
+.pdf-pres-ctrl-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;background:rgba(0,0,0,.45);border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+
 /* ── org cards ── */
 .orgs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin-bottom:40px}
 .org-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .2s;box-shadow:var(--shadow)}
@@ -900,6 +911,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
       <h2>Presentaciones del Taller</h2>
       <small id="pv-count-label" style="color:var(--muted)"></small>
     </div>
+    <div class="av-controls">
+      <button class="pres-start-btn" onclick="startPdfPres()">▶ Modo presentación</button>
+    </div>
   </div>
   <div class="pv-layout">
     <div class="pv-list" id="pv-list"></div>
@@ -965,6 +979,24 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
     </div>
     <iframe id="bw-frame" src="about:blank" title="Biowiki"></iframe>
     <div class="bw-ext">¿No carga? <a href="https://brianamaya01.github.io/biolink_col/" target="_blank">Abrir en pestaña nueva →</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PDF PRESENTATION OVERLAY ═══════════════════ -->
+<div class="pdf-pres-overlay" id="pdf-pres-overlay">
+  <div class="pdf-pres-hdr">
+    <div class="pdf-pres-info">
+      <span class="pdf-pres-org" id="pdf-pres-org"></span>
+      <span class="pdf-pres-presenter" id="pdf-pres-presenter"></span>
+    </div>
+    <span class="pdf-pres-counter" id="pdf-pres-counter"></span>
+  </div>
+  <iframe class="pdf-pres-iframe" id="pdf-pres-iframe" src="about:blank" title="Presentación"></iframe>
+  <div class="pdf-pres-ctrl-row">
+    <button class="pres-ctrl" onclick="pdfPresMove(-1)">⟨ Anterior</button>
+    <button class="pres-ctrl" onclick="pdfPresMove(1)">Siguiente ⟩</button>
+    <a class="pres-ctrl" id="pdf-pres-openlink" href="#" target="_blank" style="text-decoration:none">↗ Abrir</a>
+    <button class="pres-ctrl exit" onclick="stopPdfPres()">✕ Salir</button>
   </div>
 </div>
 
@@ -1181,7 +1213,7 @@ const PRESENTATIONS_DATA = [
   {org:"BIOINTROPIC", presenter:"Claudia Betancur", file:"BIOINTROPIC - CLAUDIA BETANCUR.pdf"},
   {org:"Gobernación de Caldas", presenter:"Maria Alejandra", file:"GOBCALDAS - MARIA ALEJANDRA.pdf"},
   {org:"Jardín Botánico", presenter:"Adriana Bolaños", file:"JARDIN BOTANICO - ADRIANA BOLAÑOS.pdf"},
-  {org:"Provincia Cartama", presenter:null, file:"PROVINCIA CARTAMA.pdf"},
+  {org:"Provincia Cartama", presenter:"Daniela López Montoya", file:"PROVINCIA CARTAMA.pdf"},
   {org:"UTP", presenter:"Diana Roldán", file:"UTP - DIANA ROLDAN.pdf"}
 ];
 const PRES_BASE = 'raw/presentaciones/eje_cafetero_antioquia/';
@@ -2770,6 +2802,12 @@ function closeBW(){
 // KEYBOARD
 // ═══════════════════════════════════════════
 document.addEventListener('keydown',e=>{
+  if(document.getElementById('pdf-pres-overlay').classList.contains('open')){
+    if(e.key==='Escape') stopPdfPres();
+    else if(e.key==='ArrowRight') pdfPresMove(1);
+    else if(e.key==='ArrowLeft') pdfPresMove(-1);
+    return;
+  }
   if(document.getElementById('pres-overlay').classList.contains('open')){
     if(e.key==='Escape') stopPresentation();
     else if(e.key==='ArrowRight') presMove(1);
@@ -2790,6 +2828,35 @@ document.addEventListener('keydown',e=>{
 // PRESENTACIONES
 // ═══════════════════════════════════════════
 let presBuilt = false;
+let pdfPresIdx = 0;
+
+function startPdfPres(idx){
+  pdfPresIdx = (idx !== undefined) ? idx : pdfPresIdx;
+  renderPdfPresSlide();
+  document.getElementById('pdf-pres-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function stopPdfPres(){
+  document.getElementById('pdf-pres-overlay').classList.remove('open');
+  document.getElementById('pdf-pres-iframe').src = 'about:blank';
+  document.body.style.overflow = '';
+}
+
+function pdfPresMove(dir){
+  pdfPresIdx = (pdfPresIdx + dir + PRESENTATIONS_DATA.length) % PRESENTATIONS_DATA.length;
+  renderPdfPresSlide();
+}
+
+function renderPdfPresSlide(){
+  const p = PRESENTATIONS_DATA[pdfPresIdx];
+  const src = PRES_BASE + encodeURIComponent(p.file);
+  document.getElementById('pdf-pres-iframe').src = src;
+  document.getElementById('pdf-pres-org').textContent = p.org;
+  document.getElementById('pdf-pres-presenter').textContent = p.presenter || '';
+  document.getElementById('pdf-pres-counter').textContent = `${pdfPresIdx + 1} / ${PRESENTATIONS_DATA.length}`;
+  document.getElementById('pdf-pres-openlink').href = src;
+}
 
 function buildPresentaciones(){
   document.getElementById('pv-count-label').textContent =
@@ -2798,13 +2865,17 @@ function buildPresentaciones(){
   list.innerHTML = `<div class="pv-list-hd">📄 ${PRESENTATIONS_DATA.length} presentaciones</div>`
     + PRESENTATIONS_DATA.map((p,i)=>`
     <div class="pv-card${i===0?' active':''}" id="pvc-${i}" onclick="openPDF(${i})">
-      <div class="pv-card-org">${p.org}</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+        <div class="pv-card-org">${p.org}</div>
+        <button onclick="event.stopPropagation();startPdfPres(${i})" title="Presentar" style="flex-shrink:0;background:none;border:none;cursor:pointer;color:var(--g);font-size:.85rem;padding:0;line-height:1">▶</button>
+      </div>
       ${p.presenter?`<div class="pv-card-pres">👤 ${p.presenter}</div>`:''}
     </div>`).join('');
   openPDF(0);
 }
 
 function openPDF(i){
+  pdfPresIdx = i;
   const p = PRESENTATIONS_DATA[i];
   const src = PRES_BASE + encodeURIComponent(p.file);
   document.getElementById('pdf-iframe').src = src;
